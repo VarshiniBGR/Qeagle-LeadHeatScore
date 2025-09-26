@@ -1,0 +1,687 @@
+{
+    "info": {
+        "name": "Lead HeatScore API",
+        "description": "Comprehensive API collection for Lead HeatScore system - AI-powered lead classification and next-action recommendations",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "v1",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health & System",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "health"
+                            ]
+                        },
+                        "description": "Check system health and status"
+                    },
+                    "response": [
+                        {
+                            "name": "Healthy System",
+                            "originalRequest": {
+                                "method": "GET",
+                                "url": "{{base_url}}/health"
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"status\": \"healthy\",\n  \"timestamp\": \"2025-09-24T10:30:00Z\",\n  \"version\": \"1.0.0\",\n  \"services\": {\n    \"database\": \"connected\",\n    \"ml_model\": \"loaded\",\n    \"email_service\": \"configured\",\n    \"vector_search\": \"active\"\n  }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Model Information",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/model/info",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "model",
+                                "info"
+                            ]
+                        },
+                        "description": "Get ML model information and performance metrics"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Lead Classification",
+            "item": [
+                {
+                    "name": "Score Single Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"source\": \"Web\",\n  \"recency_days\": 3,\n  \"region\": \"North America\",\n  \"role\": \"Manager\",\n  \"campaign\": \"AI Course\",\n  \"page_views\": 15,\n  \"last_touch\": \"Email Open\",\n  \"prior_course_interest\": \"high\",\n  \"cta\": \"Request Demo\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/score",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "score"
+                            ]
+                        },
+                        "description": "Classify a single lead as Hot, Warm, or Cold"
+                    },
+                    "response": [
+                        {
+                            "name": "Hot Lead Example",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Sarah Johnson\",\n  \"email\": \"sarah@techcorp.com\",\n  \"source\": \"Web\",\n  \"recency_days\": 1,\n  \"region\": \"North America\",\n  \"role\": \"Director\",\n  \"campaign\": \"AI Course\",\n  \"page_views\": 25,\n  \"last_touch\": \"Demo Request\",\n  \"prior_course_interest\": \"high\"\n}"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"lead_id\": \"abc123-def456-ghi789\",\n  \"heat_score\": \"hot\",\n  \"confidence\": 0.87,\n  \"probabilities\": {\n    \"cold\": 0.05,\n    \"warm\": 0.08,\n    \"hot\": 0.87\n  },\n  \"features_importance\": {\n    \"page_views\": 0.35,\n    \"recency_days\": 0.28,\n    \"prior_course_interest\": 0.20\n  }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Score Warm Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Mike Chen\",\n  \"email\": \"mike@startup.io\",\n  \"source\": \"Social Media\",\n  \"recency_days\": 5,\n  \"region\": \"Europe\",\n  \"role\": \"Manager\",\n  \"campaign\": \"Data Science\",\n  \"page_views\": 12,\n  \"last_touch\": \"Webinar\",\n  \"prior_course_interest\": \"medium\",\n  \"cta\": \"Sign-up\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/score",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "score"
+                            ]
+                        },
+                        "description": "Example of a warm lead classification"
+                    }
+                },
+                {
+                    "name": "Score Cold Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Lisa Wang\",\n  \"email\": \"lisa@company.com\",\n  \"source\": \"Referral\",\n  \"recency_days\": 30,\n  \"region\": \"Asia\",\n  \"role\": \"Student\",\n  \"campaign\": \"Business Analytics\",\n  \"page_views\": 3,\n  \"last_touch\": \"Brochure Download\",\n  \"prior_course_interest\": \"low\",\n  \"cta\": \"Download Brochure\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/score",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "score"
+                            ]
+                        },
+                        "description": "Example of a cold lead classification"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Recommendations",
+            "item": [
+                {
+                    "name": "Get Next Action Recommendation",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"source\": \"Web\",\n  \"recency_days\": 3,\n  \"region\": \"North America\",\n  \"role\": \"Manager\",\n  \"campaign\": \"AI Course\",\n  \"page_views\": 15,\n  \"last_touch\": \"Email Open\",\n  \"prior_course_interest\": \"high\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/recommend",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "recommend"
+                            ]
+                        },
+                        "description": "Get AI-powered next action recommendations"
+                    },
+                    "response": [
+                        {
+                            "name": "Hot Lead Recommendation",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Sarah Johnson\",\n  \"email\": \"sarah@techcorp.com\",\n  \"source\": \"Web\",\n  \"recency_days\": 1,\n  \"region\": \"North America\",\n  \"role\": \"Director\",\n  \"campaign\": \"AI Course\",\n  \"page_views\": 25,\n  \"last_touch\": \"Demo Request\",\n  \"prior_course_interest\": \"high\"\n}"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"lead_id\": \"abc123-def456-ghi789\",\n  \"recommendation\": {\n    \"channel\": \"email\",\n    \"message\": \"Hi Sarah, I noticed you requested a demo for our AI Course. Based on your director role and high engagement, I'd love to schedule a personalized 30-minute demo to show you how our program can accelerate your team's AI capabilities.\",\n    \"rationale\": \"High engagement + demo request + leadership role suggests immediate follow-up\",\n    \"priority\": \"high\",\n    \"suggested_timing\": \"within_24_hours\"\n  }\n}"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Batch Processing",
+            "item": [
+                {
+                    "name": "Upload CSV File",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": "/path/to/leads.csv"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/upload",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "upload"
+                            ]
+                        },
+                        "description": "Upload CSV file for batch lead processing"
+                    },
+                    "response": [
+                        {
+                            "name": "Successful Upload",
+                            "originalRequest": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "file",
+                                            "type": "file"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"message\": \"CSV processed successfully\",\n  \"total_leads\": 10,\n  \"processed_leads\": 10,\n  \"failed_leads\": 0,\n  \"processing_time\": \"2.3s\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get All Leads",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/leads?limit=50&offset=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "leads"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "50",
+                                    "description": "Number of leads to return"
+                                },
+                                {
+                                    "key": "offset",
+                                    "value": "0",
+                                    "description": "Number of leads to skip"
+                                }
+                            ]
+                        },
+                        "description": "Retrieve processed leads with pagination"
+                    }
+                },
+                {
+                    "name": "Get Hot Leads Only",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/leads?heat_score=hot&limit=20&sort_by=confidence&sort_order=desc",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "leads"
+                            ],
+                            "query": [
+                                {
+                                    "key": "heat_score",
+                                    "value": "hot",
+                                    "description": "Filter by heat score"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20"
+                                },
+                                {
+                                    "key": "sort_by",
+                                    "value": "confidence"
+                                },
+                                {
+                                    "key": "sort_order",
+                                    "value": "desc"
+                                }
+                            ]
+                        },
+                        "description": "Get only hot leads sorted by confidence"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Email Automation",
+            "item": [
+                {
+                    "name": "Send Email to Lead",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"lead_id\": \"abc123-def456-ghi789\",\n  \"to_email\": \"john.doe@example.com\",\n  \"template_type\": \"hot_lead_followup\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/send-email",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "send-email"
+                            ]
+                        },
+                        "description": "Send personalized email to a lead"
+                    },
+                    "response": [
+                        {
+                            "name": "Email Sent Successfully",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"lead_id\": \"abc123-def456-ghi789\",\n  \"to_email\": \"sarah@techcorp.com\",\n  \"template_type\": \"hot_lead_followup\"\n}"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"message\": \"Email sent successfully\",\n  \"lead_id\": \"abc123-def456-ghi789\",\n  \"to_email\": \"sarah@techcorp.com\",\n  \"lead_type\": \"hot\",\n  \"subject\": \"Exclusive AI Course Demo - Limited Time\"\n}"
+                        },
+                        {
+                            "name": "Email Configuration Warning",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"lead_id\": \"xyz789-abc123\",\n  \"to_email\": \"test@example.com\"\n}"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"message\": \"Email configuration not set up - email not sent\",\n  \"lead_id\": \"xyz789-abc123\",\n  \"to_email\": \"test@example.com\",\n  \"warning\": \"Please configure email settings to enable email functionality. See EMAIL_CONFIG_FIX.md for instructions.\"\n}"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Testing & Examples",
+            "item": [
+                {
+                    "name": "Test All Lead Types",
+                    "item": [
+                        {
+                            "name": "Test Hot Lead Flow",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Sarah Johnson\",\n  \"email\": \"sarah@techcorp.com\",\n  \"source\": \"Web\",\n  \"recency_days\": 1,\n  \"region\": \"North America\",\n  \"role\": \"Director\",\n  \"campaign\": \"AI Course\",\n  \"page_views\": 25,\n  \"last_touch\": \"Demo Request\",\n  \"prior_course_interest\": \"high\",\n  \"cta\": \"Request Demo\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/{{api_version}}/score",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "{{api_version}}",
+                                        "score"
+                                    ]
+                                },
+                                "description": "Test case designed to trigger HOT classification"
+                            }
+                        },
+                        {
+                            "name": "Test Warm Lead Flow",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Mike Chen\",\n  \"email\": \"mike@startup.io\",\n  \"source\": \"Social Media\",\n  \"recency_days\": 5,\n  \"region\": \"Europe\",\n  \"role\": \"Manager\",\n  \"campaign\": \"Data Science\",\n  \"page_views\": 12,\n  \"last_touch\": \"Webinar\",\n  \"prior_course_interest\": \"medium\",\n  \"cta\": \"Sign-up\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/{{api_version}}/score",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "{{api_version}}",
+                                        "score"
+                                    ]
+                                },
+                                "description": "Test case designed to trigger WARM classification"
+                            }
+                        },
+                        {
+                            "name": "Test Cold Lead Flow",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Lisa Wang\",\n  \"email\": \"lisa@company.com\",\n  \"source\": \"Referral\",\n  \"recency_days\": 30,\n  \"region\": \"Asia\",\n  \"role\": \"Student\",\n  \"campaign\": \"Business Analytics\",\n  \"page_views\": 3,\n  \"last_touch\": \"Brochure Download\",\n  \"prior_course_interest\": \"low\",\n  \"cta\": \"Download Brochure\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/{{api_version}}/score",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "{{api_version}}",
+                                        "score"
+                                    ]
+                                },
+                                "description": "Test case designed to trigger COLD classification"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Performance Testing",
+                    "item": [
+                        {
+                            "name": "Batch Score 10 Leads",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": "/path/to/test_leads_10.csv",
+                                            "description": "CSV file with 10 test leads"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/{{api_version}}/upload",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "{{api_version}}",
+                                        "upload"
+                                    ]
+                                },
+                                "description": "Performance test with 10 leads"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Error Scenarios",
+            "item": [
+                {
+                    "name": "Invalid Lead Data",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"\",\n  \"email\": \"invalid-email\",\n  \"recency_days\": -5,\n  \"page_views\": \"not-a-number\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/score",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "score"
+                            ]
+                        },
+                        "description": "Test validation errors"
+                    }
+                },
+                {
+                    "name": "Missing Required Fields",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test User\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/score",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "score"
+                            ]
+                        },
+                        "description": "Test missing required fields"
+                    }
+                },
+                {
+                    "name": "Invalid CSV Format",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": "/path/to/invalid.txt",
+                                    "description": "Non-CSV file"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/upload",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "upload"
+                            ]
+                        },
+                        "description": "Test invalid file format"
+                    }
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Set timestamp for requests",
+                    "pm.globals.set('timestamp', new Date().toISOString());"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Global test script for all requests",
+                    "pm.test('Response time is less than 3000ms', function () {",
+                    "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                    "});",
+                    "",
+                    "pm.test('Response has proper headers', function () {",
+                    "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                    "});",
+                    "",
+                    "// Log response for debugging",
+                    "console.log('Response:', pm.response.json());"
+                ]
+            }
+        }
+    ]
+}
