@@ -23,6 +23,7 @@ const Leads = () => {
     try {
       // Fetch real leads from the API
       const apiLeads = await leadAPI.getLeads();
+      // Log without sensitive data in demo mode
       console.log('API returned leads:', apiLeads.length);
       
       if (apiLeads.length > 0) {
@@ -37,6 +38,7 @@ const Leads = () => {
           cold: apiLeads.filter(lead => lead.score.heat_score === 'cold').length
         };
         setStats(newStats);
+        // Log without sensitive data in demo mode
         console.log('Using real leads from API:', newStats);
       } else {
         // No leads from API - show empty state

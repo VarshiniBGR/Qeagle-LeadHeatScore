@@ -13,7 +13,6 @@ class HeatScore(str, Enum):
 class Channel(str, Enum):
     EMAIL = "email"
     TELEGRAM = "telegram"
-    WHATSAPP = "whatsapp"
     NEWSLETTER = "newsletter"
 
 
@@ -128,6 +127,37 @@ class SearchResult(BaseModel):
     document: KnowledgeDocument
     score: float
     rank: int
+
+
+class ABTestRequest(BaseModel):
+    """Request schema for A/B testing."""
+    lead_data: LeadInput
+    test_name: Optional[str] = Field("template_vs_rag", description="Name of the A/B test")
+    include_metrics: bool = Field(True, description="Include performance metrics")
+
+
+class ABTestResult(BaseModel):
+    """A/B test comparison result."""
+    test_name: str
+    lead_id: str
+    template_email: Dict[str, Any] = Field(..., description="Template-based email result")
+    rag_email: Dict[str, Any] = Field(..., description="RAG-generated email result")
+    comparison_metrics: Dict[str, Any] = Field(default_factory=dict)
+    recommendation: str = Field(..., description="Which approach performed better")
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class ABTestMetrics(BaseModel):
+    """Metrics for A/B testing comparison."""
+    template_score: float = Field(..., description="Template email quality score (1-5)")
+    rag_score: float = Field(..., description="RAG email quality score (1-5)")
+    template_latency_ms: float = Field(..., description="Template generation latency")
+    rag_latency_ms: float = Field(..., description="RAG generation latency")
+    template_tokens: int = Field(..., description="Template email token count")
+    rag_tokens: int = Field(..., description="RAG email token count")
+    template_cost: float = Field(..., description="Template generation cost")
+    rag_cost: float = Field(..., description="RAG generation cost")
+    winner: str = Field(..., description="Which approach won (template/rag/tie)")
 
 
 class ErrorResponse(BaseModel):

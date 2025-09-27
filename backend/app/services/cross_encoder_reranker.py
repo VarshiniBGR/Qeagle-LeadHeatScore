@@ -4,7 +4,6 @@ Enhanced reranking using sentence-transformers cross-encoder models
 """
 
 import numpy as np
-from sentence_transformers import CrossEncoder
 from typing import List, Dict, Any, Optional, Tuple
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
@@ -13,6 +12,15 @@ from app.utils.logging import get_logger
 from app.config import settings
 
 logger = get_logger(__name__)
+
+# Try to import CrossEncoder, but make it optional
+try:
+    from sentence_transformers import CrossEncoder
+    CROSS_ENCODER_AVAILABLE = True
+except ImportError:
+    logger.warning("CrossEncoder not available - reranking disabled")
+    CROSS_ENCODER_AVAILABLE = False
+    CrossEncoder = None
 
 
 class CrossEncoderReranker:
@@ -36,20 +44,18 @@ class CrossEncoderReranker:
     
     def _initialize_model(self):
         """Initialize the cross-encoder model."""
+        if not CROSS_ENCODER_AVAILABLE:
+            logger.warning("CrossEncoder not available - reranking disabled")
+            self.cross_encoder = None
+            return
+            
         try:
             logger.info(f"Loading cross-encoder model: {self.model_name}")
             self.cross_encoder = CrossEncoder(self.model_name)
             logger.info(f"Cross-encoder model loaded successfully")
         except Exception as e:
             logger.error(f"Error loading cross-encoder model: {e}")
-            # Fallback to a simpler model
-            try:
-                logger.info("Falling back to ms-marco-MiniLM-L-6-v2")
-                self.cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-                logger.info("Fallback cross-encoder model loaded")
-            except Exception as fallback_error:
-                logger.error(f"Fallback model also failed: {fallback_error}")
-                self.cross_encoder = None
+            self.cross_encoder = None
     
     def _prepare_query_document_pairs(
         self, 

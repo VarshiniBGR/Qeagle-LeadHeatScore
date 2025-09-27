@@ -47,6 +47,19 @@ class PromptInjectionDetector:
             # Command injection
             r'[;&|`$].*(rm|del|format|shutdown)',
             r'(?i)(exec|eval|system|shell)',
+            
+            # External tool call patterns (NEW)
+            r'(?i)(function_call|tool_call|api_call)',
+            r'(?i)(call.*function|invoke.*tool)',
+            r'(?i)(execute.*command|run.*script)',
+            r'(?i)(curl|wget|http_request)',
+            r'(?i)(import|require|include).*(os|subprocess|sys)',
+            
+            # Advanced prompt injection techniques
+            r'(?i)(roleplay|simulation|hypothetical)',
+            r'(?i)(developer|debug|test).*(mode|mode)',
+            r'(?i)(backdoor|hidden|secret).*(command|function)',
+            r'(?i)(override.*safety|disable.*filter)',
         ]
         
         # Compile patterns for efficiency
@@ -60,6 +73,8 @@ class PromptInjectionDetector:
             'code_injection': 0.95,
             'sql_injection': 0.9,
             'command_injection': 0.95,
+            'external_tool_call': 0.9,  # NEW
+            'advanced_injection': 0.85,  # NEW
         }
     
     def detect_injection(self, text: str) -> SafetyResult:
@@ -128,8 +143,12 @@ class PromptInjectionDetector:
             return 'code_injection'
         elif pattern_index < 13:
             return 'sql_injection'
-        else:
+        elif pattern_index < 15:
             return 'command_injection'
+        elif pattern_index < 20:  # NEW: External tool call patterns
+            return 'external_tool_call'
+        else:  # NEW: Advanced injection techniques
+            return 'advanced_injection'
     
     def _check_heuristics(self, text: str) -> float:
         """Check additional heuristics for suspicious content."""
@@ -170,6 +189,27 @@ class PromptInjectionDetector:
         # Remove command injection patterns
         text = re.sub(r'[;&|`$].*', '[FILTERED]', text)
         
+        # NEW: Remove external tool call patterns
+        tool_call_patterns = [
+            r'(?i)(function_call|tool_call|api_call)',
+            r'(?i)(call.*function|invoke.*tool)',
+            r'(?i)(execute.*command|run.*script)',
+            r'(?i)(curl|wget|http_request)',
+            r'(?i)(import|require|include).*(os|subprocess|sys)',
+        ]
+        for pattern in tool_call_patterns:
+            text = re.sub(pattern, '[FILTERED]', text)
+        
+        # NEW: Remove advanced injection patterns
+        advanced_patterns = [
+            r'(?i)(roleplay|simulation|hypothetical)',
+            r'(?i)(developer|debug|test).*(mode|mode)',
+            r'(?i)(backdoor|hidden|secret).*(command|function)',
+            r'(?i)(override.*safety|disable.*filter)',
+        ]
+        for pattern in advanced_patterns:
+            text = re.sub(pattern, '[FILTERED]', text)
+        
         return text
 
 class PIIDetector:
@@ -183,6 +223,12 @@ class PIIDetector:
             'ssn': re.compile(r'\b\d{3}-?\d{2}-?\d{4}\b'),
             'credit_card': re.compile(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'),
             'ip_address': re.compile(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'),
+            # NEW: Enhanced PII patterns for messaging
+            'international_phone': re.compile(r'\b(?:\+\d{1,3}[-.\s]?)?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}\b'),
+            'passport': re.compile(r'\b[A-Z]{1,2}\d{6,9}\b'),
+            'driver_license': re.compile(r'\b[A-Z]\d{7,8}\b'),
+            'bank_account': re.compile(r'\b\d{8,17}\b'),
+            'address': re.compile(r'\b\d+\s+[A-Za-z\s]+(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd)\b'),
         }
     
     def detect_and_redact(self, text: str) -> SafetyResult:
@@ -234,6 +280,12 @@ class PIIDetector:
             'ssn': '[SSN_REDACTED]',
             'credit_card': '[CARD_REDACTED]',
             'ip_address': '[IP_REDACTED]',
+            # NEW: Enhanced masks for messaging
+            'international_phone': '[PHONE_REDACTED]',
+            'passport': '[PASSPORT_REDACTED]',
+            'driver_license': '[LICENSE_REDACTED]',
+            'bank_account': '[ACCOUNT_REDACTED]',
+            'address': '[ADDRESS_REDACTED]',
         }
         return masks.get(pii_type, '[REDACTED]')
 
@@ -313,3 +365,61 @@ def sanitize_content(text: str, check_injection: bool = True, check_pii: bool = 
         SafetyResult with sanitized content
     """
     return content_sanitizer.sanitize(text, check_injection, check_pii)
+
+def sanitize_message_content(text: str) -> SafetyResult:
+    """
+    Enhanced safety function specifically for messaging content.
+    Applies stricter filtering for user-facing messages.
+    
+    Args:
+        text: Message content to sanitize
+        
+    Returns:
+        SafetyResult with sanitized content
+    """
+    # Use enhanced safety checks for messaging
+    result = content_sanitizer.sanitize(text, check_injection=True, check_pii=True)
+    
+    # Additional messaging-specific checks
+    if result.is_safe:
+        # Check for messaging-specific threats
+        messaging_threats = []
+        
+        # Check for excessive emojis (potential spam)
+        emoji_count = len(re.findall(r'[^\w\s]', text))
+        if emoji_count > len(text) * 0.3:  # More than 30% emojis
+            messaging_threats.append('excessive_emojis')
+        
+        # Check for repeated characters (potential spam)
+        if re.search(r'(.)\1{4,}', text):  # 5+ repeated characters
+            messaging_threats.append('repeated_characters')
+        
+        # Check for excessive caps
+        caps_ratio = len(re.findall(r'[A-Z]', text)) / len(text) if text else 0
+        if caps_ratio > 0.7:  # More than 70% caps
+            messaging_threats.append('excessive_caps')
+        
+        if messaging_threats:
+            # Filter the content
+            filtered_text = result.filtered_content
+            
+            # Remove excessive emojis
+            if 'excessive_emojis' in messaging_threats:
+                filtered_text = re.sub(r'[^\w\s]', '', filtered_text)
+            
+            # Remove repeated characters
+            if 'repeated_characters' in messaging_threats:
+                filtered_text = re.sub(r'(.)\1{4,}', r'\1\1\1', filtered_text)
+            
+            # Normalize caps
+            if 'excessive_caps' in messaging_threats:
+                filtered_text = filtered_text.lower()
+            
+            return SafetyResult(
+                is_safe=False,
+                filtered_content=filtered_text,
+                detected_threats=result.detected_threats + messaging_threats,
+                confidence=min(result.confidence, 0.8)
+            )
+    
+    return result

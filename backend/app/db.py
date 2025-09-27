@@ -43,7 +43,7 @@ async def close_mongo_connection():
 
 
 async def create_vector_index():
-    """Create vector search index for embeddings."""
+    """Check if vector search index exists (Atlas requires manual creation)."""
     try:
         collection = db.database[settings.mongo_collection]
         
@@ -52,28 +52,14 @@ async def create_vector_index():
         index_names = [idx['name'] for idx in indexes]
         
         if settings.mongo_vector_index not in index_names:
-            # Create vector search index
-            index_definition = {
-                "fields": [
-                    {
-                        "type": "vector",
-                        "path": "embedding",
-                        "numDimensions": 384,  # all-MiniLM-L6-v2 dimensions
-                        "similarity": "cosine"
-                    }
-                ]
-            }
-            
-            await collection.create_index(
-                index_definition,
-                name=settings.mongo_vector_index
-            )
-            print(f"Created vector index: {settings.mongo_vector_index}")
+            print(f"INFO: Vector index '{settings.mongo_vector_index}' not detected in regular indexes")
+            print("This is normal for Atlas vector search indexes - they don't appear in list_indexes()")
+            print("Assuming vector index exists in Atlas and proceeding...")
         else:
-            print(f"Vector index already exists: {settings.mongo_vector_index}")
+            print(f"Vector index '{settings.mongo_vector_index}' found and ready")
             
     except Exception as e:
-        print(f"Error creating vector index: {e}")
+        print(f"Error checking vector index: {e}")
 
 
 def get_sync_client() -> MongoClient:

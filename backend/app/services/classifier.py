@@ -130,8 +130,16 @@ class LeadClassifier:
             X_train_scaled = self.scaler.fit_transform(X_train)
             X_test_scaled = self.scaler.transform(X_test)
             
-            # Train Logistic Regression with calibration
-            base_model = LogisticRegression(random_state=42, max_iter=1000)
+            # Train XGBoost for better performance
+            base_model = xgb.XGBClassifier(
+                random_state=42,
+                n_estimators=100,
+                max_depth=6,
+                learning_rate=0.1,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                eval_metric='mlogloss'
+            )
             self.model = CalibratedClassifierCV(base_model, method='isotonic', cv=3)
             self.model.fit(X_train_scaled, y_train)
             

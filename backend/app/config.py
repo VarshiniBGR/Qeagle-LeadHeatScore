@@ -5,42 +5,34 @@ import os
 
 class Settings(BaseSettings):
     # MongoDB Configuration
-    mongo_uri: str = "mongodb://localhost:27017"
-    mongo_db: str = "leadheat_fresh"
+    mongo_uri: str = "mongodb+srv://padmavarshinib_db_user:Padma123@cluster0.ptelg28.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    mongo_db: str = "leadheat"  # Fixed to match actual database
     mongo_collection: str = "vectors"
     mongo_vector_index: str = "vector_index"
     
     # ML Configuration
-    embedding_model_name: str = "all-MiniLM-L6-v2"
+    embedding_model_name: str = "text-embedding-3-small"  # Latest OpenAI embedding model
     model_dir: str = "./models"
     class_thresholds: str = "hot:0.8,warm:0.5"
     
-    # AI/LLM Configuration
-    openai_api_key: str = ""
+    # AI/LLM Configuration - OpenAI Only
+    openai_api_key: str = "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"
     vector_backend: str = "mongo"
     
-    # LLM Model Configuration
-    llm_provider: str = "auto"  # auto, openai, ollama, huggingface, fallback
-    ollama_model: str = "llama2:7b"
-    huggingface_model: str = "microsoft/DialoGPT-medium"
+    # OpenAI Model Configuration
+    llm_model: str = "gpt-4o-mini"  # Latest cost-effective GPT-4 model
     llm_temperature: float = 0.3
-    llm_max_tokens: int = 500
+    llm_max_tokens: int = 800  # Increased for better quality
     
-    # RAG Email Configuration
+    # RAG Email Configuration - OpenAI Mode
     enable_rag_emails: bool = True
-    rag_email_fallback: bool = True
-    rag_email_timeout: int = 30  # seconds
+    rag_email_fallback: bool = False  # Disabled for premium quality
+    rag_email_timeout: int = 60  # Increased timeout for GPT-4
     
     # Telegram Bot Configuration
     telegram_bot_token: str = ""
     enable_telegram_messages: bool = True
     telegram_message_timeout: int = 30  # seconds
-    
-    # WhatsApp Business API Configuration
-    whatsapp_business_token: str = ""
-    whatsapp_phone_number_id: str = ""
-    enable_whatsapp_messages: bool = True
-    whatsapp_message_timeout: int = 30  # seconds
     
     # Cross-Encoder Reranker Configuration
     cross_encoder_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"

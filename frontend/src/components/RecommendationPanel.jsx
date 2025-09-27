@@ -218,11 +218,11 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
 
       // Show success message based on channel
       if (channel === 'telegram') {
-        toast.success(`Telegram message sent successfully to ${lead.lead_data.phone}!`);
+        toast.success(`Telegram message sent successfully!`);
       } else if (channel === 'newsletter') {
-        toast.success(`Newsletter sent successfully to ${lead.lead_data.email}!`);
+        toast.success(`Newsletter sent successfully!`);
       } else {
-        toast.success(`RAG Email sent successfully to ${lead.lead_data.email}!`);
+        toast.success(`Email sent successfully!`);
       }
       
       console.log('Message sent:', result);
@@ -511,64 +511,6 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
         {/* Actions */}
         {mode === 'message' && (
           <div className="p-6 border-t border-gray-200 bg-gray-50">
-            {/* Email Type Selector */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Type
-              </label>
-              
-              {/* Smart Strategy Indicator */}
-              {smartStrategy && (
-                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-blue-800">
-                        Smart Strategy
-                      </p>
-                      <p className="text-sm text-blue-700">
-                        {smartStrategy}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="emailType"
-                    value="template"
-                    checked={emailType === "template"}
-                    onChange={(e) => setEmailType(e.target.value)}
-                    className="mr-2 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">Static Template</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="emailType"
-                    value="rag"
-                    checked={emailType === "rag"}
-                    onChange={(e) => setEmailType(e.target.value)}
-                    className="mr-2 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">AI Personalized (Smart)</span>
-                </label>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {emailType === "template" 
-                  ? "Uses predefined template with variable substitution"
-                  : "AI-powered personalized content tailored to each lead's interests and behavior"
-                }
-              </p>
-            </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
               <button
@@ -582,7 +524,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                     lead.recommendation.recommended_channel === 'telegram' ? 'Send Telegram Message' :
                     lead.recommendation.recommended_channel === 'whatsapp' ? 'Send WhatsApp Message' :
                     lead.recommendation.recommended_channel === 'newsletter' ? 'Send Newsletter' :
-                    `Send ${emailType === 'rag' ? 'Smart' : 'Template'} Email`
+                    'Send Email'
                   }
                 </span>
               </button>

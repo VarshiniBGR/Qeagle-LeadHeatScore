@@ -1,7 +1,4 @@
-try:
-    from langchain_openai import OpenAI
-except ImportError:
-    from langchain_community.llms import OpenAI
+from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseOutputParser
 from typing import List, Dict, Any, Optional
@@ -181,12 +178,27 @@ LeadHeatScore Team"""
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_recommendation(lead_data, lead_score.heat_score)
             
-            # Retrieve relevant context with timing
+            # Retrieve relevant context with timing and cross-encoder reranking
             retrieval_start = time.time()
             if not context_docs:
                 query = f"{lead_data.role} {lead_data.campaign} {lead_data.prior_course_interest}"
-                search_results = await retrieval.hybrid_search(query, limit=3)
-                context_docs = [result.document for result in search_results]
+                # Use hybrid search with cross-encoder reranking for better context
+                search_results = await retrieval.hybrid_search(query, limit=5)  # Get more candidates for reranking
+                
+                # Apply cross-encoder reranking specifically for NextAction agent
+                from app.services.cross_encoder_reranker import reranker
+                if len(search_results) > 3:
+                    reranked_results = await reranker.rerank_results(
+                        query=query,
+                        results=search_results,
+                        top_k=3,  # Top 3 most relevant for context
+                        alpha=0.4,  # Higher weight for cross-encoder in NextAction
+                        use_async=True
+                    )
+                    context_docs = [result.document for result in reranked_results]
+                    logger.info(f"NextAction agent: Reranked {len(search_results)} results to top 3 using cross-encoder")
+                else:
+                    context_docs = [result.document for result in search_results]
             
             retrieval_duration = (time.time() - retrieval_start) * 1000
             performance_monitor.record_step(trace_id, "retrieval", retrieval_duration)

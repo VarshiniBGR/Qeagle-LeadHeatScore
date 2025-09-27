@@ -264,12 +264,12 @@ const LeadsTable = ({ leads, loading = false }) => {
                     <div className="text-sm font-medium text-gray-900 truncate">
                       {lead.lead_data.name || 'Unknown Name'}
                     </div>
-                    <div className="text-xs text-gray-500 truncate">
-                      {lead.lead_data.email || 'No email'}
-                    </div>
-                    <div className="text-xs text-gray-500 truncate">
-                      📱 {lead.lead_data.phone || 'No phone'}
-                    </div>
+                      <div className="text-xs text-gray-500 truncate">
+                        {lead.lead_data.email ? '***@***.***' : 'No email'}
+                      </div>
+                      <div className="text-xs text-gray-500 truncate">
+                        📱 {lead.lead_data.phone ? '***-***-****' : 'No phone'}
+                      </div>
                     <div className="text-xs text-gray-400 truncate">
                       {lead.lead_data.role} • {lead.lead_data.region}
                     </div>

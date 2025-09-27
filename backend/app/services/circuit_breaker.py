@@ -91,17 +91,25 @@ class CircuitBreaker:
             "last_failure_time": self.last_failure_time,
             "recovery_timeout": self.recovery_timeout
         }
+    
+    def reset(self):
+        """Manually reset the circuit breaker to closed state."""
+        with self.lock:
+            self.state = CircuitState.CLOSED
+            self.failure_count = 0
+            self.last_failure_time = None
+            logger.info("Circuit breaker manually reset to CLOSED state")
 
 
 # Circuit breakers for different services
 openai_circuit_breaker = CircuitBreaker(
-    failure_threshold=3,
+    failure_threshold=10,  # Increased from 3 to 10
     recovery_timeout=30,
     expected_exception=Exception
 )
 
 mongodb_circuit_breaker = CircuitBreaker(
-    failure_threshold=5,
+    failure_threshold=15,  # Increased from 5 to 15
     recovery_timeout=60,
     expected_exception=Exception
 )

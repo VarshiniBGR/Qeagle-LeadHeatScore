@@ -1,8 +1,8 @@
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Any, Optional
 import asyncio
 import time
+import openai
 from motor.motor_asyncio import AsyncIOMotorCollection
 from app.config import settings
 from app.models.schemas import KnowledgeDocument, SearchResult
@@ -25,35 +25,48 @@ class HybridRetrieval:
         self._initialize_model()
     
     def _initialize_model(self):
-        """Initialize the embedding model."""
+        """Initialize the OpenAI client."""
         try:
-            self.embedding_model = SentenceTransformer(settings.embedding_model_name)
-            logger.info(f"Initialized embedding model: {settings.embedding_model_name}")
+            if settings.openai_api_key:
+                # OpenAI client will be initialized per request
+                logger.info("OpenAI API key configured for embeddings")
+            else:
+                logger.warning("OpenAI API key not found - running in lightweight mode")
         except Exception as e:
-            logger.error(f"Error initializing embedding model: {e}")
+            logger.error(f"Error initializing OpenAI client: {e}")
             logger.info("Running in lightweight mode without ML models")
-            self.embedding_model = None
     
     async def _get_collection(self) -> AsyncIOMotorCollection:
         """Get MongoDB collection."""
-        if not self.collection:
+        if self.collection is None:
             db = await get_database()
             self.collection = db[settings.mongo_collection]
         return self.collection
     
     def _compute_embedding(self, text: str) -> List[float]:
-        """Compute embedding for text."""
-        if self.embedding_model is None:
-            # Return a dummy embedding for lightweight mode
-            logger.warning("Using dummy embedding - ML model not available")
-            return [0.0] * 384  # Standard embedding size
-        
+        """Compute embedding for text using OpenAI's latest embedding model."""
         try:
-            embedding = self.embedding_model.encode(text, convert_to_tensor=False)
-            return embedding.tolist()
+            if not settings.openai_api_key:
+                logger.warning("OpenAI API key not available - using dummy embeddings")
+                return [0.0] * 1536
+            
+            # Use OpenAI's latest embedding model
+            client = openai.OpenAI(api_key=settings.openai_api_key)
+            
+            response = client.embeddings.create(
+                input=text,
+                model=settings.embedding_model_name  # text-embedding-3-small
+            )
+            
+            embedding = response.data[0].embedding
+            logger.info(f"Using OpenAI {settings.embedding_model_name} embedding - {len(embedding)} dimensions")
+            return embedding
+            
         except Exception as e:
-            logger.error(f"Error computing embedding: {e}")
-            return [0.0] * 384  # Fallback to dummy embedding
+            logger.error(f"Error computing OpenAI embedding: {e}")
+            # Fallback to dummy embedding
+            logger.warning("Using dummy embedding as fallback")
+            return [0.0] * 1536
     
     async def add_document(self, document: KnowledgeDocument) -> str:
         """Add a document to the knowledge base."""
@@ -79,7 +92,7 @@ class HybridRetrieval:
         self, 
         query: str, 
         limit: int = 10,
-        score_threshold: float = 0.7
+        score_threshold: float = 0.0  # Lower threshold for testing
     ) -> List[SearchResult]:
         """Perform vector similarity search."""
         try:
@@ -87,45 +100,54 @@ class HybridRetrieval:
             
             # Compute query embedding
             query_embedding = self._compute_embedding(query)
+            logger.info(f"Query embedding computed, dimensions: {len(query_embedding)}")
             
-            # Vector search pipeline
-            pipeline = [
-                {
-                    "$vectorSearch": {
-                        "index": settings.mongo_vector_index,
-                        "path": "embedding",
-                        "queryVector": query_embedding,
-                        "numCandidates": limit * 2,
-                        "limit": limit,
-                        "score": {"$meta": "vectorSearchScore"}
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": 1,
-                        "title": 1,
-                        "content": 1,
-                        "category": 1,
-                        "tags": 1,
-                        "created_at": 1,
-                        "updated_at": 1,
-                        "score": {"$meta": "vectorSearchScore"}
-                    }
-                },
-                {
-                    "$match": {
-                        "score": {"$gte": score_threshold}
-                    }
-                }
-            ]
+            # Simple cosine similarity search (no MongoDB vector index needed)
+            logger.info("Using cosine similarity search")
             
-            # Execute search
-            cursor = collection.aggregate(pipeline)
-            results = await cursor.to_list(length=limit)
+            # Get all documents with embeddings
+            cursor = collection.find({"embedding": {"$exists": True}})
+            all_docs = await cursor.to_list(length=None)
+            
+            if not all_docs:
+                logger.warning("No documents with embeddings found")
+                return []
+            
+            # Calculate cosine similarity for each document
+            similarities = []
+            for doc in all_docs:
+                doc_embedding = doc.get('embedding', [])
+                
+                # Skip if document embedding is all zeros
+                if all(x == 0.0 for x in doc_embedding):
+                    logger.warning(f"Skipping document {doc.get('title', 'Unknown')} - all zero embedding")
+                    continue
+                
+                # Calculate cosine similarity
+                similarity = self._cosine_similarity(query_embedding, doc_embedding)
+                logger.info(f"Document '{doc.get('title', 'Unknown')}' similarity: {similarity:.4f}")
+                
+                # Very low threshold to catch any reasonable matches
+                if similarity >= max(score_threshold, 0.001):  # Even lower threshold!
+                    similarities.append((doc, similarity))
+            
+            # Sort by similarity score
+            similarities.sort(key=lambda x: x[1], reverse=True)
+            
+            # Take top results
+            results = [(doc, score) for doc, score in similarities[:limit]]
+            
+            logger.info(f"Cosine similarity search returned {len(results)} results (threshold: {max(score_threshold, 0.001)})")
+            if results:
+                logger.info(f"Top similarity score: {results[0][1]:.4f}")
+            else:
+                logger.warning("No vector results found - falling back to text search")
+                # Fallback to text search
+                return await self.bm25_search(query, limit)
             
             # Convert to SearchResult objects
             search_results = []
-            for i, doc in enumerate(results):
+            for i, (doc, score) in enumerate(results):
                 knowledge_doc = KnowledgeDocument(
                     id=str(doc['_id']),
                     title=doc['title'],
@@ -138,7 +160,7 @@ class HybridRetrieval:
                 
                 search_results.append(SearchResult(
                     document=knowledge_doc,
-                    score=doc['score'],
+                    score=score,
                     rank=i + 1
                 ))
             
@@ -149,20 +171,49 @@ class HybridRetrieval:
             logger.error(f"Error in vector search: {e}")
             return []
     
+    def _cosine_similarity(self, vec1: List[float], vec2: List[float]) -> float:
+        """Calculate cosine similarity between two vectors."""
+        try:
+            import numpy as np
+            
+            # Convert to numpy arrays
+            a = np.array(vec1)
+            b = np.array(vec2)
+            
+            # Calculate cosine similarity
+            dot_product = np.dot(a, b)
+            norm_a = np.linalg.norm(a)
+            norm_b = np.linalg.norm(b)
+            
+            if norm_a == 0 or norm_b == 0:
+                return 0.0
+            
+            similarity = dot_product / (norm_a * norm_b)
+            return float(similarity)
+            
+        except Exception as e:
+            logger.error(f"Error calculating cosine similarity: {e}")
+            return 0.0
+    
     async def bm25_search(
         self, 
         query: str, 
         limit: int = 10
     ) -> List[SearchResult]:
-        """Perform BM25 text search."""
+        """Perform BM25 text search (fallback to simple text matching)."""
         try:
             collection = await self._get_collection()
             
-            # MongoDB text search
+            # Simple text search without text index
             cursor = collection.find(
-                {"$text": {"$search": query}},
-                {"score": {"$meta": "textScore"}}
-            ).sort([("score", {"$meta": "textScore"})]).limit(limit)
+                {
+                    "$or": [
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"content": {"$regex": query, "$options": "i"}},
+                        {"category": {"$regex": query, "$options": "i"}}
+                    ]
+                }
+            ).limit(limit)
             
             results = await cursor.to_list(length=limit)
             

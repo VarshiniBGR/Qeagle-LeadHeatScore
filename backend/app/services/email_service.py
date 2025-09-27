@@ -8,6 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from typing import Optional, Dict, Any
 import logging
 from app.config import settings
+from app.utils.positive_language import positive_language
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,7 @@ class EmailService:
         role = lead_data.get('role', '')
         search_keywords = lead_data.get('search_keywords', '')
         course_interest = lead_data.get('prior_course_interest', '')
+        positive_interest = positive_language.convert_interest_level(course_interest)
         campaign = lead_data.get('campaign', '')
         page_views = lead_data.get('page_views', 0)
         time_spent = lead_data.get('time_spent', 0)
@@ -207,7 +209,7 @@ class EmailService:
                         <li>💰 Exclusive pricing for qualified prospects</li>
                     </ul>
                     
-                    <p>Given your {course_interest} interest level in our programs, I'm confident this course will provide significant value for your role at {company}.</p>
+                    <p>Given your engagement with our programs, I'm confident this course will provide significant value for your role at {company}.</p>
                     
                     <a href="mailto:{settings.from_email}?subject=Course%20Demo%20-%20{search_keywords or campaign}" class="cta-button">
                         🎓 Schedule Course Demo

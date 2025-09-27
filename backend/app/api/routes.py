@@ -9,15 +9,17 @@ import random
 
 from app.models.schemas import (
     LeadInput, LeadScore, Recommendation, LeadResult, BatchResult,
-    UploadResponse, HealthResponse, MetricsResponse, ErrorResponse
+    UploadResponse, HealthResponse, MetricsResponse, ErrorResponse,
+    ABTestRequest, ABTestResult, ABTestMetrics
 )
+from pydantic import BaseModel
+from typing import Optional
 from app.services.classifier import classifier
 from app.services.next_action_agent import next_action_agent
 from app.services.retrieval import retrieval
 from app.services.email_service import email_service
 from app.services.rag_email_service import rag_email_service
 from app.services.telegram_service import telegram_service
-from app.services.whatsapp_service import whatsapp_service
 from app.api.analytics import router as analytics_router
 from app.services.performance_monitor import performance_monitor
 from app.services.circuit_breaker import openai_circuit_breaker, mongodb_circuit_breaker
@@ -87,11 +89,11 @@ async def get_recommendation(lead_data: LeadInput):
         )
         
         # Safety check: Sanitize recommendation output
-        if recommendation.message:
-            message_safety = sanitize_content(recommendation.message, check_injection=True)
+        if recommendation.message_content:
+            message_safety = sanitize_content(recommendation.message_content, check_injection=True)
             if not message_safety.is_safe:
                 logger.warning(f"Unsafe recommendation message detected: {message_safety.detected_threats}")
-                recommendation.message = message_safety.filtered_content
+                recommendation.message_content = message_safety.filtered_content
         
         logger.info(f"Generated recommendation for lead: {recommendation.lead_id}")
         return recommendation
@@ -446,6 +448,449 @@ async def health_check():
             database_status="unknown",
             ml_model_status="unknown"
         )
+
+
+@router.post("/admin/reset-circuit-breaker")
+async def reset_circuit_breaker():
+    """Reset circuit breakers to enable RAG emails."""
+    try:
+        from app.services.circuit_breaker import CircuitState
+        
+        # Force reset both circuit breakers using the correct approach
+        with openai_circuit_breaker._lock:
+            openai_circuit_breaker.state = CircuitState.CLOSED
+            openai_circuit_breaker.failure_count = 0
+            openai_circuit_breaker.last_failure_time = None
+        
+        with mongodb_circuit_breaker._lock:
+            mongodb_circuit_breaker.state = CircuitState.CLOSED
+            mongodb_circuit_breaker.failure_count = 0
+            mongodb_circuit_breaker.last_failure_time = None
+        
+        logger.info("Circuit breakers forcefully reset to CLOSED state")
+        return {"message": "Circuit breakers forcefully reset successfully", "status": "success"}
+    except Exception as e:
+        logger.error(f"Error resetting circuit breakers: {e}")
+        raise HTTPException(status_code=500, detail="Failed to reset circuit breakers")
+
+
+@router.get("/admin/mongodb-status")
+async def check_mongodb_status():
+    """Check MongoDB collections and status."""
+    try:
+        from app.db import get_database
+        db = await get_database()
+        
+        # List all collections
+        collections = await db.list_collection_names()
+        
+        # Check vectors collection specifically
+        vectors_collection = db[settings.mongo_collection]
+        vectors_count = await vectors_collection.count_documents({})
+        
+        # Check if vector index exists
+        indexes = await vectors_collection.list_indexes().to_list(length=None)
+        index_names = [idx['name'] for idx in indexes]
+        
+        # For Atlas, vector search indexes don't appear in list_indexes()
+        # Assume it exists if we're using Atlas (mongodb+srv://)
+        is_atlas = settings.mongo_uri.startswith("mongodb+srv://")
+        vector_index_exists = settings.mongo_vector_index in index_names or is_atlas
+        
+        return {
+            "database": settings.mongo_db,
+            "collections": collections,
+            "vectors_collection": settings.mongo_collection,
+            "vectors_count": vectors_count,
+            "vector_index_exists": vector_index_exists,
+            "is_atlas": is_atlas,
+            "all_indexes": index_names,
+            "status": "connected"
+        }
+    except Exception as e:
+        logger.error(f"Error checking MongoDB status: {e}")
+        return {"error": str(e), "status": "error"}
+
+
+@router.get("/admin/debug-rag")
+async def debug_rag_system():
+    """Debug RAG system status and test retrieval."""
+    try:
+        from app.services.circuit_breaker import CircuitState
+        
+        # Check circuit breaker status
+        openai_state = openai_circuit_breaker.get_state()
+        mongodb_state = mongodb_circuit_breaker.get_state()
+        
+        # Test RAG retrieval directly
+        from app.services.retrieval import retrieval
+        
+        # Test query
+        test_query = "Manager Data Science career development"
+        search_results = await retrieval.hybrid_search(test_query, limit=3)
+        
+        # Test OpenAI embedding
+        test_embedding = retrieval._compute_embedding("test text")
+        
+        return {
+            "circuit_breakers": {
+                "openai": openai_state,
+                "mongodb": mongodb_state
+            },
+            "rag_test": {
+                "query": test_query,
+                "results_count": len(search_results),
+                "sample_results": [
+                    {
+                        "title": result.document.title,
+                        "score": result.score,
+                        "content_preview": result.document.content[:100] + "..."
+                    } for result in search_results[:2]
+                ],
+                "embedding_test": {
+                    "success": len(test_embedding) > 0,
+                    "dimensions": len(test_embedding)
+                }
+            },
+            "status": "debug_complete"
+        }
+    except Exception as e:
+        logger.error(f"Error debugging RAG system: {e}")
+        return {"error": str(e), "status": "error"}
+
+
+@router.post("/admin/test-rag-email")
+async def test_rag_email():
+    """Test RAG email generation directly."""
+    try:
+        from app.services.rag_email_service import rag_email_service
+        from app.models.schemas import LeadInput
+        from datetime import datetime
+        
+        # Create a test warm lead
+        test_lead = LeadInput(
+            name="Test Manager",
+            email="test@example.com",
+            phone="+91-99999-99999",
+            source="Web",
+            recency_days=5,
+            region="Delhi",
+            role="Manager",
+            campaign="Data Science",
+            page_views=12,
+            last_touch="Email Open",
+            prior_course_interest="medium",
+            search_keywords="data science manager career",
+            time_spent=300,
+            course_actions="download_brochure"
+        )
+        
+        # Generate RAG email directly
+        rag_result = await rag_email_service.generate_personalized_email(
+            lead_data=test_lead,
+            lead_type="warm"
+        )
+        
+        return {
+            "test_lead": test_lead.dict(),
+            "rag_email": rag_result,
+            "status": "rag_test_complete"
+        }
+    except Exception as e:
+        logger.error(f"Error testing RAG email: {e}")
+        return {"error": str(e), "status": "error"}
+
+@router.get("/admin/test-vector-search")
+async def test_vector_search():
+    """Test vector search directly."""
+    try:
+        from app.services.retrieval import retrieval
+        
+        # Test simple vector search
+        query = "data science career"
+        results = await retrieval.vector_search(query, limit=5, score_threshold=0.0)
+        
+        return {
+            "query": query,
+            "results_count": len(results),
+            "results": [result.dict() for result in results],
+            "status": "vector_search_test_complete"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error testing vector search: {e}")
+        raise HTTPException(status_code=500, detail=f"Vector search test failed: {str(e)}")
+
+@router.get("/admin/check-indexes")
+async def check_indexes():
+    """Check MongoDB indexes on vectors collection."""
+    try:
+        from app.db import get_database
+        
+        db = await get_database()
+        collection = db[settings.mongo_collection]
+        
+        # Get all indexes
+        indexes = await collection.list_indexes().to_list(length=None)
+        
+        # Get document count and sample documents
+        doc_count = await collection.count_documents({})
+        sample_docs = await collection.find({}).limit(3).to_list(length=3)
+        
+        return {
+            "collection": settings.mongo_collection,
+            "indexes": indexes,
+            "index_count": len(indexes),
+            "document_count": doc_count,
+            "sample_documents": [
+                {
+                    "_id": str(doc["_id"]),
+                    "title": doc.get("title", "N/A"),
+                    "has_embedding": "embedding" in doc,
+                    "embedding_size": len(doc.get("embedding", [])) if "embedding" in doc else 0
+                }
+                for doc in sample_docs
+            ],
+            "status": "index_check_complete"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error checking indexes: {e}")
+        raise HTTPException(status_code=500, detail=f"Index check failed: {str(e)}")
+
+@router.get("/admin/manual-vector-test")
+async def manual_vector_test():
+    """Manual vector search test using raw MongoDB command."""
+    try:
+        from app.db import get_database
+        from app.services.retrieval import retrieval
+        
+        db = await get_database()
+        collection = db[settings.mongo_collection]
+        
+        # Get a sample embedding from existing document
+        sample_doc = await collection.find_one({"embedding": {"$exists": True}})
+        if not sample_doc:
+            return {"error": "No documents with embeddings found"}
+        
+        sample_embedding = sample_doc["embedding"]
+        
+        # Check if embedding is all zeros
+        is_zero_vector = all(x == 0.0 for x in sample_embedding)
+        embedding_sum = sum(sample_embedding)
+        embedding_sample = sample_embedding[:5]  # First 5 values
+        
+        return {
+            "test_type": "embedding_check",
+            "document_id": str(sample_doc["_id"]),
+            "document_title": sample_doc.get("title", "N/A"),
+            "embedding_size": len(sample_embedding),
+            "is_zero_vector": is_zero_vector,
+            "embedding_sum": embedding_sum,
+            "embedding_sample": embedding_sample,
+            "status": "embedding_check_complete"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in manual vector test: {e}")
+        return {"error": str(e), "status": "manual_test_failed"}
+
+@router.get("/admin/test-openai")
+async def test_openai():
+    """Test OpenAI API directly."""
+    try:
+        import openai
+        from app.config import settings
+        
+        if not settings.openai_api_key:
+            return {
+                "error": "OpenAI API key not configured",
+                "status": "error"
+            }
+        
+        # Test embedding generation
+        client = openai.OpenAI(api_key=settings.openai_api_key)
+        response = client.embeddings.create(
+            input="test embedding",
+            model="text-embedding-ada-002"
+        )
+        
+        embedding = response.data[0].embedding
+        
+        return {
+            "openai_status": "working",
+            "embedding_dimensions": len(embedding),
+            "sample_embedding": embedding[:5],  # First 5 values
+            "status": "openai_test_complete"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error testing OpenAI: {e}")
+        return {
+            "error": str(e),
+            "status": "openai_test_failed"
+        }
+
+@router.get("/admin/test-config")
+async def test_config():
+    """Test configuration without OpenAI."""
+    try:
+        from app.config import settings
+        
+        return {
+            "mongo_uri": settings.mongo_uri[:20] + "..." if len(settings.mongo_uri) > 20 else settings.mongo_uri,
+            "mongo_db": settings.mongo_db,
+            "mongo_collection": settings.mongo_collection,
+            "mongo_vector_index": settings.mongo_vector_index,
+            "openai_configured": bool(settings.openai_api_key),
+            "openai_key_length": len(settings.openai_api_key) if settings.openai_api_key else 0,
+            "status": "config_test_complete"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error testing config: {e}")
+        return {
+            "error": str(e),
+            "status": "config_test_failed"
+        }
+
+@router.get("/admin/test-simple-openai")
+async def test_simple_openai():
+    """Test OpenAI API with simple embedding generation."""
+    try:
+        import openai
+        from app.config import settings
+        
+        if not settings.openai_api_key:
+            return {"error": "OpenAI API key not configured", "status": "error"}
+        
+        # Simple embedding test
+        client = openai.OpenAI(api_key=settings.openai_api_key)
+        response = client.embeddings.create(
+            input="test",
+            model="text-embedding-ada-002"
+        )
+        
+        return {
+            "openai_working": True,
+            "embedding_length": len(response.data[0].embedding),
+            "status": "success"
+        }
+        
+    except Exception as e:
+        return {"error": str(e), "openai_working": False, "status": "error"}
+
+
+@router.post("/admin/update-embeddings")
+async def update_embeddings():
+    """Update knowledge documents with real OpenAI embeddings."""
+    try:
+        from app.db import get_database
+        from app.services.retrieval import retrieval
+        
+        db = await get_database()
+        collection = db[settings.mongo_collection]
+        
+        # Get all documents
+        documents = await collection.find({}).to_list(length=None)
+        
+        updated_count = 0
+        for doc in documents:
+            try:
+                # Generate real embedding for the content
+                real_embedding = retrieval._compute_embedding(doc['content'])
+                
+                # Update the document with real embedding
+                await collection.update_one(
+                    {"_id": doc["_id"]},
+                    {"$set": {"embedding": real_embedding}}
+                )
+                updated_count += 1
+                logger.info(f"Updated embedding for document: {doc['title']}")
+            except Exception as e:
+                logger.error(f"Error updating embedding for {doc['title']}: {e}")
+        
+        return {
+            "message": f"Updated {updated_count} documents with real embeddings",
+            "updated_count": updated_count,
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Error updating embeddings: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update embeddings: {str(e)}")
+
+
+@router.post("/admin/add-sample-knowledge")
+async def add_sample_knowledge():
+    """Add sample knowledge documents for RAG testing."""
+    try:
+        from app.db import get_database
+        from datetime import datetime
+        
+        db = await get_database()
+        collection = db[settings.mongo_collection]
+        
+        # Sample knowledge documents
+        sample_docs = [
+            {
+                "title": "Data Science Course Overview",
+                "content": "Our Data Science program covers Python, machine learning, statistics, and data visualization. Perfect for managers and working professionals looking to advance their careers in analytics.",
+                "category": "course_info",
+                "tags": ["data-science", "python", "machine-learning", "analytics"],
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "embedding": [0.1] * 1536  # Dummy embedding for now
+            },
+            {
+                "title": "AI Course Benefits", 
+                "content": "The AI Course provides hands-on experience with neural networks, deep learning, and AI applications. Students and professionals can learn cutting-edge AI technologies.",
+                "category": "course_info",
+                "tags": ["ai", "neural-networks", "deep-learning", "artificial-intelligence"],
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "embedding": [0.2] * 1536  # Dummy embedding for now
+            },
+            {
+                "title": "Business Analytics Program",
+                "content": "Business Analytics focuses on SQL, reporting, and business intelligence. Ideal for managers who need to make data-driven decisions and working professionals in business roles.",
+                "category": "course_info",
+                "tags": ["business-analytics", "sql", "reporting", "business-intelligence"],
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "embedding": [0.3] * 1536  # Dummy embedding for now
+            },
+            {
+                "title": "Career Support Services",
+                "content": "We provide comprehensive career guidance, placement support, and mentorship programs. Our industry-recognized certificates help professionals advance their careers.",
+                "category": "support",
+                "tags": ["career-guidance", "placement", "mentorship", "certification"],
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "embedding": [0.4] * 1536  # Dummy embedding for now
+            },
+            {
+                "title": "Learning Resources",
+                "content": "Access to practical hands-on projects, real-world case studies, and expert mentorship. Our resources are designed for different learning levels from students to managers.",
+                "category": "resources",
+                "tags": ["hands-on", "projects", "case-studies", "mentorship"],
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "embedding": [0.5] * 1536  # Dummy embedding for now
+            }
+        ]
+        
+        # Insert documents directly
+        result = await collection.insert_many(sample_docs)
+        added_count = len(result.inserted_ids)
+        
+        return {
+            "message": f"Added {added_count} sample knowledge documents",
+            "added_count": added_count,
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Error adding sample knowledge: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to add sample knowledge: {str(e)}")
 
 
 @router.get("/performance", response_model=Dict[str, Any])
@@ -820,16 +1265,64 @@ async def get_personalized_email(lead_data: Dict[str, Any]):
         def get_smart_email_type(lead_type: str) -> str:
             """Determine email type based on lead heat score."""
             if lead_type == "hot":
-                return "telegram"  # Default to telegram for hot leads
+                return "rag"  # Use RAG for hot leads (same as sent)
             elif lead_type == "warm":
                 return "rag"
             else:  # cold
-                return "newsletter"
+                return "template"  # Use template for cold leads (same as sent)
         
         final_email_type = get_smart_email_type(lead_type)
         
         # Generate actual content based on channel
-        if final_email_type == "telegram":
+        if final_email_type == "rag":
+            # Use RAG email generation (same as sent email)
+            try:
+                rag_email = await rag_email_service.generate_personalized_email(
+                    lead_input, lead_type
+                )
+                subject = rag_email["subject"]
+                html_content = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                        .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                        .rag-indicator {{ background: #e3f2fd; padding: 10px; border-left: 4px solid #2196f3; margin: 15px 0; border-radius: 4px; }}
+                        .ai-powered {{ background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 15px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🤖 AI-Personalized Message</h1>
+                            <p>Tailored specifically for you</p>
+                        </div>
+                        <div class="content">
+                            <div class="rag-indicator">
+                                <span class="ai-powered">✨ AI-POWERED</span>
+                                <p style="margin: 5px 0 0 0; font-size: 14px; color: #1976d2;">This message was personalized using AI based on your profile and interests.</p>
+                            </div>
+                            <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.7;">{rag_email['content']}</div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                text_content = rag_email["content"]
+                email_source = "rag"
+            except Exception as e:
+                logger.warning(f"RAG email generation failed, falling back to template: {e}")
+                # Fallback to template for consistency
+                template = email_service.get_email_template(lead_type, lead_data)
+                subject = template["subject"]
+                html_content = template["content"]
+                text_content = template["text_content"]
+                email_source = "template_fallback"
+        elif final_email_type == "telegram":
             # Generate Telegram message
             from app.models.schemas import HeatScore
             
@@ -1078,44 +1571,6 @@ async def test_telegram_connection():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/send-whatsapp-message")
-async def send_whatsapp_message(request: Dict[str, Any]):
-    """Send message via WhatsApp Business API."""
-    try:
-        phone_number = request.get("phone_number")
-        message = request.get("message")
-        
-        if not phone_number or not message:
-            raise HTTPException(status_code=400, detail="phone_number and message are required")
-        
-        # Send via WhatsApp service
-        result = await whatsapp_service.send_message(phone_number, message)
-        
-        if result["success"]:
-            logger.info(f"WhatsApp message sent successfully to {phone_number}")
-            return {
-                "message": "WhatsApp message sent successfully",
-                "phone_number": phone_number,
-                "message_id": result.get("message_id")
-            }
-        else:
-            logger.error(f"Failed to send WhatsApp message: {result.get('error')}")
-            raise HTTPException(status_code=500, detail=f"Failed to send WhatsApp message: {result.get('error')}")
-        
-    except Exception as e:
-        logger.error(f"Error sending WhatsApp message: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/test-whatsapp-connection")
-async def test_whatsapp_connection():
-    """Test WhatsApp Business API connection."""
-    try:
-        result = await whatsapp_service.test_connection()
-        return result
-    except Exception as e:
-        logger.error(f"Error testing WhatsApp connection: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
     """Generate both template and RAG emails for A/B testing."""
     try:
         # Convert to LeadInput for validation
@@ -1512,4 +1967,154 @@ async def get_roc_curves():
         raise
     except Exception as e:
         logger.error(f"Error getting ROC curves: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/admin/switch-to-demo-mode")
+async def switch_to_demo_mode():
+    """Switch RAG email service to GPT-4o for high-quality demos."""
+    try:
+        from app.services.rag_email_service import rag_email_service
+        rag_email_service.switch_to_demo_mode()
+        
+        return {
+            "message": "Switched to GPT-4o demo mode for high-quality emails",
+            "model": "gpt-4o",
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Error switching to demo mode: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/admin/switch-to-production-mode")
+async def switch_to_production_mode():
+    """Switch RAG email service back to GPT-3.5 Turbo for cost efficiency."""
+    try:
+        from app.services.rag_email_service import rag_email_service
+        rag_email_service.switch_to_production_mode()
+        
+        return {
+            "message": "Switched to GPT-3.5 Turbo production mode for cost efficiency",
+            "model": "gpt-3.5-turbo",
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Error switching to production mode: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/ab-test", response_model=ABTestResult)
+async def ab_test_template_vs_rag(request: ABTestRequest):
+    """
+    A/B test comparing template-based vs RAG-generated emails.
+    
+    This endpoint generates both template and RAG emails for the same lead
+    and provides a comparison with metrics to determine which approach
+    performs better.
+    """
+    try:
+        # Start performance trace
+        trace_id = performance_monitor.start_trace("ab_test")
+        
+        # Generate lead ID
+        lead_id = str(uuid.uuid4())
+        
+        # First, classify the lead
+        lead_score = classifier.predict(request.lead_data)
+        
+        logger.info(f"Starting A/B test for lead {lead_id}: {request.test_name}")
+        
+        # Generate Template Email
+        template_start = time.time()
+        template_result = await rag_email_service.generate_personalized_email(
+            request.lead_data, 
+            lead_score.heat_score,
+            force_template=True  # Force template mode
+        )
+        template_latency = (time.time() - template_start) * 1000
+        
+        # Generate RAG Email
+        rag_start = time.time()
+        rag_result = await rag_email_service.generate_personalized_email(
+            request.lead_data,
+            lead_score.heat_score,
+            force_template=False  # Allow RAG mode
+        )
+        rag_latency = (time.time() - rag_start) * 1000
+        
+        # Calculate metrics
+        template_tokens = len(template_result.get('content', '').split())
+        rag_tokens = len(rag_result.get('content', '').split())
+        
+        # Simple quality scoring based on content length and personalization
+        template_score = min(5.0, max(1.0, 
+            (template_tokens / 50) + 
+            (1 if 'personalized' in template_result.get('content', '').lower() else 0) +
+            (1 if request.lead_data.name in template_result.get('content', '') else 0)
+        ))
+        
+        rag_score = min(5.0, max(1.0,
+            (rag_tokens / 50) + 
+            (2 if 'personalized' in rag_result.get('content', '').lower() else 0) +
+            (1 if request.lead_data.name in rag_result.get('content', '') else 0) +
+            (1 if rag_result.get('type') == 'rag' else 0)
+        ))
+        
+        # Determine winner
+        if rag_score > template_score + 0.5:
+            winner = "rag"
+            recommendation = "RAG-generated email shows better personalization and quality"
+        elif template_score > rag_score + 0.5:
+            winner = "template"
+            recommendation = "Template email is more consistent and reliable"
+        else:
+            winner = "tie"
+            recommendation = "Both approaches perform similarly - consider using templates for cost efficiency"
+        
+        # Calculate costs (simplified)
+        template_cost = template_tokens * 0.0001  # $0.0001 per token
+        rag_cost = rag_tokens * 0.0002  # $0.0002 per token (higher for RAG)
+        
+        # Create comparison metrics
+        comparison_metrics = ABTestMetrics(
+            template_score=round(template_score, 2),
+            rag_score=round(rag_score, 2),
+            template_latency_ms=round(template_latency, 2),
+            rag_latency_ms=round(rag_latency, 2),
+            template_tokens=template_tokens,
+            rag_tokens=rag_tokens,
+            template_cost=round(template_cost, 4),
+            rag_cost=round(rag_cost, 4),
+            winner=winner
+        )
+        
+        # Create result
+        ab_test_result = ABTestResult(
+            test_name=request.test_name,
+            lead_id=lead_id,
+            template_email={
+                "subject": template_result.get('subject', ''),
+                "content": template_result.get('content', ''),
+                "email_type": template_result.get('type', 'template'),
+                "generation_time_ms": template_latency
+            },
+            rag_email={
+                "subject": rag_result.get('subject', ''),
+                "content": rag_result.get('content', ''),
+                "email_type": rag_result.get('type', 'rag'),
+                "generation_time_ms": rag_latency
+            },
+            comparison_metrics=comparison_metrics.dict(),
+            recommendation=recommendation
+        )
+        
+        performance_monitor.finish_trace(trace_id, status_code=200)
+        
+        logger.info(f"A/B test completed for {lead_id}: {winner} wins")
+        return ab_test_result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in A/B test: {e}")
+        performance_monitor.finish_trace(trace_id, status_code=500, error_type=type(e).__name__)
         raise HTTPException(status_code=500, detail=str(e))

@@ -37,6 +37,7 @@ function App() {
             {/* Protected Routes */}
             <Route path="/*" element={
               <ProtectedRoute>
+
                 <Navbar />
                 <div className="flex">
                   <Sidebar />

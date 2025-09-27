@@ -6,8 +6,9 @@ import re
 from typing import List, Dict, Any, Tuple, Optional
 from collections import Counter, defaultdict
 import numpy as np
-from sentence_transformers import SentenceTransformer
+import openai
 from app.utils.logging import get_logger, performance_logger
+from app.config import settings
 
 logger = get_logger(__name__)
 
@@ -84,8 +85,8 @@ class BM25Retriever:
 class HybridRetrieval:
     """Hybrid retrieval combining BM25 and vector search."""
     
-    def __init__(self, embedding_model_name: str = "all-MiniLM-L6-v2"):
-        self.embedding_model = SentenceTransformer(embedding_model_name)
+    def __init__(self, embedding_model_name: str = "text-embedding-ada-002"):
+        self.embedding_model_name = embedding_model_name
         self.bm25_retriever = BM25Retriever()
         self.documents: List[str] = []
         self.document_embeddings: Optional[np.ndarray] = None
@@ -100,9 +101,31 @@ class HybridRetrieval:
         
         # Generate embeddings for vector search
         logger.info(f"Generating embeddings for {len(documents)} documents...")
-        self.document_embeddings = self.embedding_model.encode(documents)
+        self.document_embeddings = self._generate_embeddings(documents)
         
         logger.info(f"Hybrid retrieval index built with {len(documents)} documents")
+    
+    def _generate_embeddings(self, texts: List[str]) -> np.ndarray:
+        """Generate embeddings using OpenAI."""
+        try:
+            if not settings.openai_api_key:
+                logger.warning("Using dummy embeddings - OpenAI API key not available")
+                return np.zeros((len(texts), 1536))
+            
+            client = openai.OpenAI(api_key=settings.openai_api_key)
+            embeddings = []
+            
+            for text in texts:
+                response = client.embeddings.create(
+                    input=text,
+                    model="text-embedding-ada-002"
+                )
+                embeddings.append(response.data[0].embedding)
+            
+            return np.array(embeddings)
+        except Exception as e:
+            logger.error(f"Error generating embeddings: {e}")
+            return np.zeros((len(texts), 1536))
     
     def search(self, query: str, top_k: int = 10, alpha: Optional[float] = None) -> List[Tuple[int, float, Dict[str, Any]]]:
         """
@@ -127,7 +150,7 @@ class HybridRetrieval:
             bm25_scores = {doc_id: score for doc_id, score in bm25_results}
             
             # Vector search
-            query_embedding = self.embedding_model.encode([query])
+            query_embedding = self._generate_embeddings([query])
             if self.document_embeddings is not None:
                 # Calculate cosine similarities
                 similarities = np.dot(self.document_embeddings, query_embedding.T).flatten()
