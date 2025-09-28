@@ -1,57 +1,82 @@
 # Lead HeatScore
 
-> A machine learning system for intelligent lead classification and personalized outreach
+AI-powered lead classification and personalized outreach platform using machine learning and RAG technology.
 
-## 🎯 What it does
+## Features
 
-Lead HeatScore analyzes lead engagement data to classify prospects as **Hot**, **Warm**, or **Cold**. The system combines XGBoost classification with multi-channel outreach including personalized emails, Telegram messages, and SMS for comprehensive lead management.
+- **Lead Classification**: Lightweight Logistic Regression baseline (74.2% accuracy) with XGBoost comparison
+- **Personalized Recommendations**: RAG-powered next-action suggestions
+- **Hybrid Search**: BM25 + Vector similarity with cross-encoder reranking
+- **Real-time Processing**: Sub-2-second response times
+- **Enterprise Security**: Prompt injection detection and PII protection
 
-### Key Features
-- **Lead Classification** - ML-powered scoring with 87.3% accuracy
-- **Multi-Channel Outreach** - Email, Telegram, and SMS messaging
-- **Personalized Content** - AI-generated recommendations using RAG
-- **Performance Analytics** - Comprehensive metrics and evaluation
-- **Modern API** - RESTful endpoints for easy integration
+## Tech Stack
 
-## 🏗️ Architecture
+**Backend**
+- FastAPI (Python 3.10+)
+- Logistic Regression (Lightweight Baseline)
+- XGBoost (ML Classification Comparison)
+- LangChain (LLM Orchestration)
+- MongoDB Atlas (Vector Database)
+- OpenAI GPT-4o-mini
+
+**Frontend**
+- React 18
+- Tailwind CSS
+- Vite
+
+## Project Structure
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   React Frontend │    │   FastAPI       │    │   MongoDB       │
-│   (Port 3000)   │◄──►│   Backend       │◄──►│   Atlas         │
-│                 │    │   (Port 8000)   │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                         │
-         │                         ▼
-         │                ┌─────────────────┐
-         │                │   ML Pipeline    │
-         │                │   • XGBoost     │
-         │                │   • OpenAI     │
-         │                │   • Embeddings  │
-         │                └─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│   Multi-Channel  │
-│   Messaging      │
-└─────────────────┘
+lead-heatscore/
+├── backend/
+│   ├── app/
+│   │   ├── api/           # API endpoints
+│   │   ├── models/        # Data schemas
+│   │   ├── services/      # Business logic
+│   │   └── utils/         # Utilities
+│   ├── data/              # Training datasets
+│   ├── models/            # Trained ML models
+│   ├── metrics/           # Performance metrics
+│   ├── scripts/           # Utility scripts
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── pages/         # Page components
+│   │   ├── contexts/      # React contexts
+│   │   ├── lib/           # API client
+│   │   └── utils/         # Frontend utilities
+│   └── package.json
+├── docs/                  # Documentation
+├── notebooks/             # Jupyter notebooks
+└── metrics/               # Performance analysis
 ```
 
-## 🚀 Quick Start
+## Setup Instructions
 
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
 - MongoDB Atlas account
-- OpenAI API key
+- OpenAI API key (required for premium AI features)
 
 ### Backend Setup
 
 ```bash
+# Clone repository
+git clone <repository-url>
+cd lead-heatscore
+
+# Install dependencies
 cd backend
 pip install -r requirements.txt
+
+# Configure environment
 cp env.example .env
 # Edit .env with your credentials
+
+# Start server
 python -m uvicorn app.main:app --reload --port 8000
 ```
 
@@ -65,125 +90,30 @@ npm run dev
 
 **Access:** http://localhost:3000 | **API Docs:** http://localhost:8000/docs
 
-## 🛠️ Technology Stack
+## AI Models (100% FREE)
 
-**Backend:** FastAPI, XGBoost, MongoDB Atlas, LangChain, OpenAI  
-**Frontend:** React 18, Tailwind CSS, Vite
+This project uses **completely FREE** Hugging Face models:
 
-## 📊 Model Performance
+- **Embeddings**: `all-MiniLM-L6-v2` (384 dimensions)
+- **LLM Generation**: `DialoGPT-medium` (conversational AI)
+- **Reranker**: `cross-encoder/ms-marco-MiniLM-L-6-v2`
+- **Classification**: Logistic Regression + XGBoost comparison
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Accuracy** | 87.3% | ✅ Excellent |
-| **F1 Score (Macro)** | 84.2% | ✅ Meets target |
-| **Latency** | 45.2ms | ✅ Fast inference |
+**No API costs** - all models run locally!
 
-### Per-Class Results
-- **Cold**: F1 = 81.5% ✅
-- **Warm**: F1 = 85.6% ✅  
-- **Hot**: F1 = 85.5% ✅
+## MongoDB Atlas Setup
 
-## 🔌 API Usage
+1. Create MongoDB Atlas account at [mongodb.com/atlas](https://mongodb.com/atlas)
+2. Create new cluster (M0 free tier available)
+3. Create database user with read/write permissions
+4. Whitelist your IP address
+5. Get connection string and add to `.env` file
+6. Create vector search index for embeddings
 
-### Score a Lead
+## Architecture
 
-```bash
-POST /api/v1/score
-```
+![System Architecture](architecture_diagram.html)
 
-**Request:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "source": "website",
-  "recency_days": 5,
-  "region": "North America",
-  "role": "Manager",
-  "campaign": "AI Course",
-  "page_views": 15,
-  "last_touch": "email",
-  "prior_course_interest": "high"
-}
-```
-
-**Response:**
-```json
-{
-  "lead_id": "abc123",
-  "heat_score": "hot",
-  "confidence": 0.87,
-  "probabilities": {
-    "cold": 0.05,
-    "warm": 0.08,
-    "hot": 0.87
-  },
-  "recommendations": "Schedule demo call within 24 hours"
-}
-```
-
-### Additional Endpoints
-- `POST /api/v1/recommend` - Get personalized recommendations
-- `POST /api/v1/send-telegram-message` - Send Telegram messages
-- `POST /api/v1/send-telegram-to-phone` - Send Telegram via phone number
-- `GET /health` - System health check
-
-## ⚙️ Configuration
-
-Create `backend/.env`:
-
-```env
-# Database
-MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/
-MONGO_DB=leadheat
-
-# AI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
-EMBEDDING_MODEL_NAME=text-embedding-3-small
-LLM_MODEL=gpt-4o-mini
-
-# Telegram Bot (Optional)
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-TELEGRAM_CHAT_ID=your_chat_id_here
-
-# Email (Optional)
-SMTP_SERVER=smtp.gmail.com
-SMTP_USERNAME=your_email@gmail.com
-SMTP_PASSWORD=your_app_password
-```
-
-## 📁 Project Structure
-
-```
-lead-heatscore/
-├── backend/
-│   ├── app/           # API endpoints, models, services
-│   ├── data/          # Training datasets
-│   └── models/        # Trained ML models
-├── frontend/
-│   └── src/           # React components and pages
-├── notebooks/
-│   └── metrics_report.ipynb  # Performance analysis
-└── docs/
-    └── ARCHITECTURE.md
-```
-
-## 📈 Training Data
-
-The model is trained on real lead data with features including:
-- **Engagement**: Page views, time spent, course actions
-- **Temporal**: Recency days, last touchpoint
-- **Demographic**: Region, role, campaign source
-- **Behavioral**: Prior course interest, search keywords
-
-**Data Sources:** `backend/data/leads_train.csv` and `backend/data/leads_test.csv`
-
-## 🔬 Evaluation & Metrics
-
-Comprehensive evaluation including confusion matrix, ROC curves, calibration plots, and A/B testing results. View detailed metrics in `notebooks/metrics_report.ipynb`
+*Architecture diagram available as `architecture_diagram.html` in project root*
 
 
-
----
-
-**Built for intelligent lead management** 🎯
