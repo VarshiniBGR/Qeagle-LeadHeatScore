@@ -6,7 +6,7 @@ AI-powered lead classification and personalized outreach platform using machine 
 
 - **Lead Classification**: Lightweight Logistic Regression baseline (74.2% accuracy) with XGBoost comparison
 - **Personalized Recommendations**: RAG-powered next-action suggestions
-- **Hybrid Search**: BM25 + Vector similarity with cross-encoder reranking
+- **Hybrid Search**: BM25 + Vector similarity
 - **Real-time Processing**: Sub-2-second response times
 - **Enterprise Security**: Prompt injection detection and PII protection
 
@@ -90,16 +90,15 @@ npm run dev
 
 **Access:** http://localhost:3000 | **API Docs:** http://localhost:8000/docs
 
-## AI Models (100% FREE)
+## AI Models (OpenAI Premium)
 
-This project uses **completely FREE** Hugging Face models:
+This project uses **OpenAI's premium models** for superior performance:
 
-- **Embeddings**: `all-MiniLM-L6-v2` (384 dimensions)
-- **LLM Generation**: `DialoGPT-medium` (conversational AI)
-- **Reranker**: `cross-encoder/ms-marco-MiniLM-L-6-v2`
+- **Embeddings**: `text-embedding-3-small` (1536 dimensions)
+- **LLM Generation**: `gpt-4o-mini` (advanced conversational AI)
 - **Classification**: Logistic Regression + XGBoost comparison
 
-**No API costs** - all models run locally!
+**Premium AI** - Superior accuracy and performance!
 
 ## MongoDB Atlas Setup
 
