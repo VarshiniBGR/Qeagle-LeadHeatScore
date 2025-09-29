@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload as UploadIcon, FileText, CheckCircle, Eye } from 'lucide-react';
+import { Upload as UploadIcon, FileText, CheckCircle, Eye, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CsvUpload from '../components/CsvUpload';
 import { leadAPI } from '../lib/api';
@@ -13,40 +13,45 @@ const Upload = () => {
   const handleUploadSuccess = async (result) => {
     setUploadResult(result);
     
-    // Automatically process the uploaded leads
-    if (result.valid_rows > 0) {
-      toast.success('Starting lead processing...');
-      await processLeads(result.batch_id);
+    // Show success message and navigate to leads
+    if (result.batchResult && result.batchResult.processed_leads > 0) {
+      toast.success(`✅ Successfully processed ${result.batchResult.processed_leads} leads!`);
+      
+      // Navigate to leads page after a short delay
+      setTimeout(() => {
+        navigate('/leads');
+      }, 2000);
     }
   };
 
-  const processLeads = async (batchId) => {
-    setProcessing(true);
+  const clearAllLeads = async () => {
     try {
-      // In a real implementation, you would:
-      // 1. Get the leads from the batch
-      // 2. Process them through the classification pipeline
-      // 3. Generate recommendations
-      
-      // For now, we'll simulate this process
-      toast.success('Leads processed successfully!');
-      
-      // Don't redirect automatically - let user choose when to view results
-      
+      await leadAPI.clearAllLeads();
+      toast.success('All leads cleared successfully');
     } catch (error) {
-      toast.error('Error processing leads');
-    } finally {
-      setProcessing(false);
+      toast.error('Error clearing leads');
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Upload Lead Data</h1>
-        <p className="text-gray-600">
-          Upload your lead data in CSV format to get AI-powered heat scores and next action recommendations.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Upload Lead Data</h1>
+            <p className="text-gray-600">
+              Upload your lead data in CSV format to get AI-powered heat scores and next action recommendations.
+            </p>
+          </div>
+          
+          <button
+            onClick={clearAllLeads}
+            className="btn btn-secondary"
+          >
+            <AlertCircle className="h-4 w-4 mr-2" />
+            Clear All Leads
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -18,22 +18,121 @@ import {
 import toast from 'react-hot-toast';
 import { leadAPI } from '../lib/api';
 
+// Fallback email content functions
+const getFallbackSubject = (heatScore, leadData) => {
+  switch (heatScore) {
+    case 'hot':
+      return `URGENT: Exclusive Invitation - 48 Hours Only`;
+    case 'warm':
+      return `Free Webinar: ${leadData.role} Success in AI Program`;
+    case 'cold':
+      return `Free AI Career Assessment for ${leadData.role}s`;
+    default:
+      return `Personalized Email for ${leadData.name}`;
+  }
+};
+
+const getFallbackEmailContent = (heatScore, leadData) => {
+  const name = leadData.name || 'there';
+  const role = leadData.role || 'professional';
+  const pageViews = leadData.page_views || 0;
+  
+  switch (heatScore) {
+    case 'hot':
+      return `Hi ${name}!
+
+Your ${pageViews} page views show strong interest in our AI Program.
+
+🎯 EXCLUSIVE OFFER (48 Hours):
+• 30% discount + free consultation (worth $500)
+• Only 2 spots left
+• Join 500+ professionals who got promoted
+
+Reply 'YES' to claim your spot!
+
+Best regards,
+LeadHeatScore Team`;
+    
+    case 'warm':
+      return `Hi ${name}!
+
+Your ${pageViews} page views show interest in our AI Program.
+
+🎓 FREE WEBINAR:
+• 'Leadership in AI Transformation' with Google's former AI team lead
+• Strategies for ${role}s
+• Free AI Leadership Guide (worth $200)
+• Network with 200+ professionals
+• 14-day free trial
+
+No sales pitch, just value. Reply 'WEBINAR' to join!
+
+Best regards,
+LeadHeatScore Team`;
+    
+    case 'cold':
+      return `Hi ${name}!
+
+Hope you're doing well. I wanted to share something valuable - our 'AI Career Assessment' (worth $200) is now free.
+
+As a ${role}, understanding your AI readiness is crucial. This assessment includes:
+
+📊 FREE ASSESSMENT:
+• AI skill evaluation
+• Career roadmap
+• Industry insights
+• Personalized recommendations
+• 5-part 'AI Career Trends' series
+
+No strings attached, just valuable insights. Loved by 50,000+ professionals.
+
+Get started here: [Assessment Link]
+
+Best regards,
+LeadHeatScore Team`;
+    
+    default:
+      return `Hi ${name}!
+
+Thank you for your interest in our AI Program.
+
+We have exciting opportunities for ${role}s like yourself.
+
+Best regards,
+LeadHeatScore Team`;
+  }
+};
+
+// Function to clean rationale from subject lines
+const cleanSubjectLine = (subject, heatScore, leadData) => {
+  if (!subject) return getFallbackSubject(heatScore, leadData);
+  
+  // Check if subject contains rationale words
+  const rationaleWords = ['leverages', 'emphasizing', 'creating', 'acknowledges', 'making', 'because', 'this email', 'by emphasizing', 'while also', 'personal touch'];
+  
+  const isRationale = rationaleWords.some(word => subject.toLowerCase().includes(word));
+  
+  if (isRationale) {
+    // Return a proper subject line instead of rationale
+    return getFallbackSubject(heatScore, leadData);
+  }
+  
+  return subject;
+};
+
 const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
   const [personalizedEmail, setPersonalizedEmail] = useState(null);
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(lead.recommendation?.message_content || '');
   const [isSending, setIsSending] = useState(false);
-  const [emailType, setEmailType] = useState("template"); // "template" or "rag"
+  const [emailType, setEmailType] = useState("rag"); // All leads use RAG personalization
   const [smartStrategy, setSmartStrategy] = useState(null);
 
   // Determine smart email type based on lead heat score
   const getSmartEmailType = (heatScore) => {
-    if (heatScore === "hot" || heatScore === "warm") {
-      return "rag";
-    } else {
-      return "template";
-    }
+    // All leads use RAG personalization with different tones based on heat score
+    return "rag";  // All leads get RAG-personalized emails
   };
 
   // Set initial email type based on smart strategy
@@ -41,7 +140,8 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
     if (lead?.heat_score) {
       const smartType = getSmartEmailType(lead.heat_score);
       setEmailType(smartType);
-      setSmartStrategy(`${lead.heat_score} leads get ${smartType === 'rag' ? 'Smart' : 'Template'} emails`);
+      // No need for strategy explanation since all leads get RAG emails
+      setSmartStrategy(null);
     }
   }, [lead?.heat_score]);
 
@@ -56,34 +156,28 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
         const emailData = await leadAPI.getPersonalizedEmail(lead.lead_data);
         console.log('Received personalized data:', emailData);
         
-        // For Telegram messages, convert markdown formatting to HTML
-        if (lead.recommendation?.recommended_channel === 'telegram') {
-          let htmlContent = emailData.text_content || emailData.html_content || ''
-            .replace(/\n/g, '<br>')
-            .replace(/~~(.*?)~~/g, '<del>$1</del>') // Convert strikethrough
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Convert bold
-            .replace(/\*(.*?)\*/g, '<em>$1</em>'); // Convert italic
-          
-          const telegramData = {
-            ...emailData,
-            html_content: htmlContent,
-            email_type: 'telegram',
-            final_email_type: 'telegram',
-            smart_strategy: `${lead.score?.heat_score || 'hot'} leads get Telegram messages`,
-            personalization_data: {
-              name: lead.lead_data.name,
-              role: lead.lead_data.role,
-              search_keywords: lead.lead_data.search_keywords || '',
-              page_views: lead.lead_data.page_views || 0,
-              time_spent: lead.lead_data.time_spent || 0,
-              course_actions: lead.lead_data.course_actions || '',
-              prior_course_interest: lead.lead_data.prior_course_interest || 'low'
-            }
-          };
-          setPersonalizedEmail(telegramData);
-        } else {
-          setPersonalizedEmail(emailData);
-        }
+        // All leads use RAG-personalized emails with different tones
+        const ragData = {
+          ...emailData,
+          email_type: 'rag',
+          final_email_type: 'rag',
+          // No strategy needed since all leads get RAG emails
+          smart_strategy: null,
+          // Map API response fields to expected UI fields
+          content: emailData.content || emailData.message_content || emailData.body || getFallbackEmailContent(lead.score?.heat_score || 'hot', lead.lead_data),
+          subject: cleanSubjectLine(emailData.subject || emailData.subject_line, lead.score?.heat_score || 'hot', lead.lead_data),
+          personalization_data: {
+            name: lead.lead_data.name,
+            role: lead.lead_data.role,
+            search_keywords: lead.lead_data.search_keywords || '',
+            page_views: lead.lead_data.page_views || 0,
+            time_spent: lead.lead_data.time_spent || 0,
+            course_actions: lead.lead_data.course_actions || '',
+            prior_course_interest: lead.lead_data.prior_course_interest || 'low'
+          }
+        };
+        
+        setPersonalizedEmail(ragData);
       } catch (error) {
         console.error('Error loading personalized content:', error);
         toast.error('Failed to load personalized content');
@@ -95,20 +189,54 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
     loadPersonalizedEmail();
   }, [lead, mode]);
 
-  if (!lead.recommendation) {
+  // Generate recommendation on-demand if not available (only in message mode)
+  useEffect(() => {
+    const generateRecommendationOnDemand = async () => {
+      if (!lead.recommendation && lead.lead_data && mode === 'message') {
+        try {
+          console.log('Generating RAG recommendation for lead:', lead.lead_data.name);
+          
+          // Try RAG recommendation with overall timeout to prevent 30+ second hangs
+          const ragPromise = leadAPI.getRecommendation(lead.lead_data);
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('RAG timeout after 15 seconds')), 15000) // 15 second overall timeout
+          );
+          
+          const recommendation = await Promise.race([ragPromise, timeoutPromise]);
+          
+          // Update the lead object with the generated recommendation
+          lead.recommendation = recommendation;
+          
+          console.log('Generated RAG recommendation:', recommendation);
+        } catch (error) {
+          console.error('RAG failed, using fallback template:', error);
+          
+          // Fallback to template-based recommendation only in worst case
+          const fallbackRecommendation = {
+            lead_id: lead.lead_id,
+            recommended_channel: 'email',
+            message_content: getFallbackEmailContent(lead.score?.heat_score || 'warm', lead.lead_data),
+            rationale: `Fallback template for ${lead.score?.heat_score || 'warm'} lead`,
+            confidence: 0.7
+          };
+          
+          lead.recommendation = fallbackRecommendation;
+          console.log('Using fallback template recommendation');
+        }
+      }
+    };
+
+    generateRecommendationOnDemand();
+  }, [lead, mode]);
+
+  if (!lead.recommendation && mode === 'message') {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
           <div className="text-center">
-            <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Recommendation Available</h3>
-            <p className="text-gray-500 mb-4">This lead doesn't have a recommendation yet.</p>
-            <button
-              onClick={onClose}
-              className="btn btn-secondary"
-            >
-              Close
-            </button>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Generating RAG-Powered Recommendation</h3>
+            <p className="text-gray-500 mb-4">Creating personalized recommendation using AI... (Fallback to template if needed)</p>
           </div>
         </div>
       </div>
@@ -162,13 +290,9 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
 
   const handleSendMessage = async () => {
     const message = isEditing ? editedMessage : lead.recommendation.message_content;
-    const channel = lead.recommendation.recommended_channel;
     
-    // Check required fields based on channel
-    if ((channel === 'telegram' || channel === 'whatsapp') && !lead.lead_data?.phone) {
-      toast.error('No phone number found for messaging');
-      return;
-    } else if (channel === 'email' && !lead.lead_data?.email) {
+    // All leads use email - check for email address
+    if (!lead.lead_data?.email) {
       toast.error('No email address found for this lead');
       return;
     }
@@ -176,54 +300,29 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
     setIsSending(true);
     
     try {
-      let result;
-      
-      if (channel === 'telegram') {
-        // Send Telegram message
-        result = await leadAPI.sendTelegramMessage(
-          lead.lead_data.phone,
-          message,
-          lead.lead_data
-        );
-      } else if (channel === 'whatsapp') {
-        // Send WhatsApp message
-        result = await leadAPI.sendWhatsAppMessage(
-          lead.lead_data.phone,
-          message
-        );
-      } else {
-        // Send email (default behavior)
-        // Prepare lead data for email sending - send complete lead data
-        const leadData = {
-          name: lead.lead_data.name || 'Valued Customer',
-          email: lead.lead_data.email,
-          source: lead.lead_data.source || 'unknown',
-          recency_days: lead.lead_data.recency_days || 0,
-          region: lead.lead_data.region || 'unknown',
-          role: lead.lead_data.role || 'professional',
-          campaign: lead.lead_data.campaign || 'Lead HeatScore Campaign',
-          page_views: lead.lead_data.page_views || 0,
-          last_touch: lead.lead_data.last_touch || 'unknown',
-          prior_course_interest: lead.lead_data.prior_course_interest || 'low'
-        };
+      // All leads send RAG-personalized emails
+      const leadData = {
+        name: lead.lead_data.name || 'Valued Customer',
+        email: lead.lead_data.email,
+        source: lead.lead_data.source || 'unknown',
+        recency_days: lead.lead_data.recency_days || 0,
+        region: lead.lead_data.region || 'unknown',
+        role: lead.lead_data.role || 'professional',
+        campaign: lead.lead_data.campaign || 'Lead HeatScore Campaign',
+        page_views: lead.lead_data.page_views || 0,
+        last_touch: lead.lead_data.last_touch || 'unknown',
+        prior_course_interest: lead.lead_data.prior_course_interest || 'low'
+      };
 
-        // Send email via API
-        result = await leadAPI.sendEmail(
-          lead.lead_id,
-          lead.lead_data.email,
-          leadData,
-          emailType  // Pass email type
-        );
-      }
+      // Send RAG-personalized email via API
+      const result = await leadAPI.sendEmail(
+        lead.lead_id,
+        lead.lead_data.email,
+        leadData,
+        emailType  // Always "rag" for RAG personalization
+      );
 
-      // Show success message based on channel
-      if (channel === 'telegram') {
-        toast.success(`Telegram message sent successfully!`);
-      } else if (channel === 'newsletter') {
-        toast.success(`Newsletter sent successfully!`);
-      } else {
-        toast.success(`Email sent successfully!`);
-      }
+      toast.success(`Email sent successfully!`);
       
       console.log('Message sent:', result);
       
@@ -234,7 +333,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
       
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error(`Failed to send ${channel === 'telegram' ? 'Telegram message' : channel === 'newsletter' ? 'Newsletter' : 'RAG Email'}. Please check your configuration.`);
+      toast.error(`Failed to send RAG-personalized email. Please check your configuration.`);
     } finally {
       setIsSending(false);
     }
@@ -258,17 +357,12 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
               <MessageCircle className="h-6 w-6 text-primary-600" />
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {mode === 'view' ? 'Lead Engagement Details' : 
-                   lead.recommendation?.recommended_channel === 'telegram' ? 'Telegram Message Preview' :
-                   lead.recommendation?.recommended_channel === 'newsletter' ? 'Newsletter Preview' :
-                   'Personalized Email Preview'}
+                  {mode === 'view' ? 'Lead Engagement Details' : 'RAG-Personalized Email Preview'}
                 </h2>
                 <p className="text-sm text-gray-500">
                   {mode === 'view' 
                     ? 'View detailed engagement metrics and behavioral data' 
-                    : lead.recommendation?.recommended_channel === 'telegram' ? 'AI-powered Telegram message with personalized content and call-to-action' :
-                      lead.recommendation?.recommended_channel === 'newsletter' ? 'Newsletter content for low-touch nurturing and engagement' :
-                      'Coursera-style personalized email with search keywords and course recommendations'
+                    : `AI-powered personalized email with ${lead.score?.heat_score === 'hot' ? 'urgent' : lead.score?.heat_score === 'warm' ? 'nurturing' : 'educational'} tone based on lead heat score`
                   }
                 </p>
               </div>
@@ -283,12 +377,15 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
           
           {/* Channel and Status Tags */}
           <div className="flex items-center space-x-2 mt-4">
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getChannelColor(lead.recommendation.recommended_channel)}`}>
-              {getChannelIcon(lead.recommendation.recommended_channel)}
-              <span className="ml-2">{getChannelName(lead.recommendation.recommended_channel)}</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              <Mail className="h-4 w-4" />
+              <span className="ml-2">RAG-Personalized Email</span>
             </span>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-              Recommended
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <span className="ml-2">{lead.score?.heat_score?.toUpperCase() || 'HOT'} Lead</span>
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+              <span className="ml-2">{lead.score?.heat_score === 'hot' ? 'Urgent' : lead.score?.heat_score === 'warm' ? 'Nurturing' : 'Educational'} Tone</span>
             </span>
           </div>
         </div>
@@ -362,9 +459,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
                     <span className="ml-3 text-gray-600">
-                      {lead.recommendation?.recommended_channel === 'telegram' ? 'Generating Telegram message...' :
-                       lead.recommendation?.recommended_channel === 'newsletter' ? 'Generating newsletter content...' :
-                       'Generating personalized email...'}
+                      Generating RAG-personalized email with {lead.score?.heat_score === 'hot' ? 'urgent' : lead.score?.heat_score === 'warm' ? 'nurturing' : 'educational'} tone...
                     </span>
                   </div>
                 ) : personalizedEmail ? (
@@ -373,77 +468,54 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                     <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
                       <div className="text-sm font-medium text-blue-900 mb-1">Subject Line:</div>
                       <div className="text-lg font-semibold text-blue-800">
-                        {personalizedEmail.subject}
+                        {cleanSubjectLine(personalizedEmail.subject, lead.score?.heat_score || 'hot', lead.lead_data)}
                       </div>
-                    </div>
-                    
-                    {/* Channel-Specific Message Preview */}
-                    <div className="bg-gray-50 rounded-lg p-4 border">
-                      <div className="text-sm font-medium text-gray-700 mb-2">
-                        {lead.recommendation.recommended_channel === 'telegram' && '📱 Telegram Message Preview:'}
-                        {lead.recommendation.recommended_channel === 'email' && '📧 Email Preview:'}
-                        {lead.recommendation.recommended_channel === 'newsletter' && '📰 Newsletter Preview:'}
-                        {!['telegram', 'email', 'newsletter'].includes(lead.recommendation.recommended_channel) && 'Message Preview:'}
-                      </div>
-                      
-                      {/* Smart Strategy Info */}
-                      {personalizedEmail.smart_strategy && (
-                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                              <svg className="h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                            <div className="ml-2">
-                              <p className="text-xs font-medium text-blue-800">
-                                Smart Strategy: {personalizedEmail.smart_strategy}
-                              </p>
-                              <p className="text-xs text-blue-700">
-                                Email Type: {personalizedEmail.email_type?.toUpperCase() || 'TEMPLATE'}
-                                {personalizedEmail.email_type === 'rag' && (
-                                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-500 to-cyan-500 text-white">
-                                    ✨ AI-POWERED
-                                  </span>
-                                )}
-                              </p>
-                            </div>
-                          </div>
+                      {!personalizedEmail.subject && (
+                        <div className="text-xs text-blue-600 mt-1">
+                          (Using fallback subject)
                         </div>
                       )}
+                    </div>
+                    
+                    {/* Generated Email Content */}
+                    <div className="bg-gray-50 rounded-lg p-4 border">
+                      <div className="text-sm font-medium text-gray-700 mb-2">
+                        📧 Generated Email Content:
+                      </div>
                       
                       <div className="bg-white rounded-lg border overflow-hidden shadow-lg">
                         <style>
                           {`
-                            .telegram-preview del {
+                            .email-preview del {
                               text-decoration: line-through;
                               color: #ef4444 !important;
                               opacity: 0.8;
                             }
-                            .telegram-preview strong {
+                            .email-preview strong {
                               color: #fbbf24 !important;
                               font-weight: bold;
                             }
+                            .email-preview {
+                              white-space: pre-wrap;
+                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                              line-height: 1.6;
+                            }
                           `}
                         </style>
-                        {personalizedEmail.html_content ? (
+                        {personalizedEmail.content ? (
                           <div 
-                            className={`email-preview max-h-96 overflow-y-auto ${
-                              lead.recommendation.recommended_channel === 'telegram' ? 'bg-gray-900 text-green-400 p-4 font-mono text-sm whitespace-pre-wrap telegram-preview' :
-                              lead.recommendation.recommended_channel === 'newsletter' ? 'bg-gray-50 p-4' :
-                              'p-4'
-                            }`}
-                            style={{
-                              ...(lead.recommendation.recommended_channel === 'telegram' && {
-                                '--tw-text-opacity': '1',
-                                color: 'rgb(34 197 94 / var(--tw-text-opacity))'
-                              })
-                            }}
+                            className="email-preview max-h-96 overflow-y-auto p-4 bg-white"
+                          >
+                            {personalizedEmail.content}
+                          </div>
+                        ) : personalizedEmail.html_content ? (
+                          <div 
+                            className="email-preview max-h-96 overflow-y-auto p-4 bg-white"
                             dangerouslySetInnerHTML={{ __html: personalizedEmail.html_content }}
                           />
                         ) : (
                           <div className="p-4 text-gray-500 text-center">
-                            No content available
+                            No email content available
                           </div>
                         )}
                       </div>
@@ -486,26 +558,6 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
             </div>
           )}
 
-          {/* Rationale */}
-          <div>
-            <h3 className="font-medium text-gray-900 mb-3">Rationale</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              {lead.recommendation.rationale}
-            </p>
-          </div>
-
-          {/* References */}
-          <div>
-            <h3 className="font-medium text-gray-900 mb-3">References</h3>
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                policy_doc_engagement
-              </span>
-              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                persona_{lead.lead_data.role.toLowerCase().replace(' ', '_')}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Actions */}
@@ -518,14 +570,9 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                 disabled={isSending}
                 className="btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {getChannelIcon(lead.recommendation.recommended_channel)}
+                <Mail className="h-4 w-4" />
                 <span>
-                  {isSending ? 'Sending...' : 
-                    lead.recommendation.recommended_channel === 'telegram' ? 'Send Telegram Message' :
-                    lead.recommendation.recommended_channel === 'whatsapp' ? 'Send WhatsApp Message' :
-                    lead.recommendation.recommended_channel === 'newsletter' ? 'Send Newsletter' :
-                    'Send Email'
-                  }
+                  {isSending ? 'Sending...' : 'Send RAG-Personalized Email'}
                 </span>
               </button>
               

@@ -147,68 +147,68 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-blue-50 p-8 rounded-xl">
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-6">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Military-Grade Security</h3>
-              <p className="text-gray-600">
-                JWT authentication, bcrypt hashing, and CORS protection ensure your lead data is safe and secure.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
             <div className="bg-green-50 p-8 rounded-xl">
               <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-6">
                 <Zap className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Smart ML Classification</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Smart Lead Scoring</h3>
               <p className="text-gray-600">
-                Advanced machine learning models automatically classify leads as hot, warm, or cold with high accuracy.
+                Instantly identify your hottest prospects. Our AI analyzes behavior patterns to score leads as hot, warm, or cold.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-blue-50 p-8 rounded-xl">
+              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-6">
+                <Mail className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Personalized Messages</h3>
+              <p className="text-gray-600">
+                Get ready-to-send emails tailored for each lead. Hot leads get urgency, warm leads get trust-building, cold leads get value.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-purple-50 p-8 rounded-xl">
-              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-6">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Admin Controls</h3>
-              <p className="text-gray-600">
-                Complete user management, system statistics, and administrative oversight for your team.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
             <div className="bg-yellow-50 p-8 rounded-xl">
               <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-6">
                 <Upload className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Easy Lead Management</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Instant Setup</h3>
               <p className="text-gray-600">
-                Upload, process, and organize your leads with intuitive CSV import and real-time processing.
+                Upload your lead list and start getting personalized messages in minutes. No complex setup or training required.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-purple-50 p-8 rounded-xl">
+              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-6">
+                <Target className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Higher Conversions</h3>
+              <p className="text-gray-600">
+                Personalized messages convert better than generic templates. Focus on hot leads first for maximum ROI.
               </p>
             </div>
 
             {/* Feature 5 */}
             <div className="bg-red-50 p-8 rounded-xl">
               <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-6">
-                <Database className="h-6 w-6 text-white" />
+                <TrendingUp className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Reliable Storage</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Save Time</h3>
               <p className="text-gray-600">
-                Secure MongoDB with vector indexing and multi-region backup for your lead data.
+                Stop writing emails from scratch. Get professional, personalized messages ready to send in seconds.
               </p>
             </div>
 
             {/* Feature 6 */}
             <div className="bg-indigo-50 p-8 rounded-xl">
               <div className="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center mb-6">
-                <ShieldCheck className="h-6 w-6 text-white" />
+                <MessageSquare className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Rate Limiting</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Fresh Content</h3>
               <p className="text-gray-600">
-                Advanced policies protect against abuse with intelligent throttling and circuit breakers.
+                Every message is unique. No repetitive templates - each email is crafted specifically for that lead.
               </p>
             </div>
           </div>

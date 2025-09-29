@@ -9,6 +9,29 @@ const CsvUpload = ({ onUploadSuccess }) => {
   const [uploadResult, setUploadResult] = useState(null);
   const fileInputRef = useRef(null);
 
+  // Proper CSV line parser that handles quoted fields
+  const parseCSVLine = (line) => {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current.trim());
+    return result;
+  };
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -45,14 +68,47 @@ const CsvUpload = ({ onUploadSuccess }) => {
     setUploadResult(null);
 
     try {
-      const result = await leadAPI.uploadCSV(file);
-      setUploadResult(result);
-      toast.success(`Successfully uploaded ${result.valid_rows} leads`);
+      // Step 1: Upload CSV file
+      const uploadResult = await leadAPI.uploadCSV(file);
+      setUploadResult(uploadResult);
+      
+      // Step 2: Process CSV data through batch-score
+      toast.loading('Processing leads through AI classifier...', { id: 'processing' });
+      
+      const csvText = await file.text();
+      const lines = csvText.trim().split('\n');
+      const headers = parseCSVLine(lines[0]);
+      const leadsData = [];
+      
+      // Parse CSV data with proper CSV parsing
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+        const leadData = {};
+        headers.forEach((header, index) => {
+          leadData[header.trim()] = values[index]?.trim() || '';
+        });
+        leadsData.push(leadData);
+      }
+      
+      // Process through batch-score API
+      const batchResult = await leadAPI.batchScoreLeads(leadsData);
+      
+      toast.dismiss('processing');
+      
+      // Show distribution in a single clean message
+      const hotCount = batchResult.results.filter(r => r.score.heat_score === 'hot').length;
+      const warmCount = batchResult.results.filter(r => r.score.heat_score === 'warm').length;
+      const coldCount = batchResult.results.filter(r => r.score.heat_score === 'cold').length;
+      
+      toast.success(`✅ Successfully processed ${batchResult.processed_leads} leads!`, { 
+        duration: 3000 
+      });
       
       if (onUploadSuccess) {
-        onUploadSuccess(result);
+        onUploadSuccess({ ...uploadResult, batchResult });
       }
     } catch (error) {
+      toast.dismiss('processing');
       toast.error(error.response?.data?.detail || 'Upload failed');
     } finally {
       setUploading(false);

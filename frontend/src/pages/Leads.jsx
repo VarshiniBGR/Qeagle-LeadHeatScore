@@ -19,11 +19,12 @@ const Leads = () => {
   }, []);
 
   const loadLeads = async () => {
+    console.log('Starting to load leads...');
     setLoading(true);
     try {
       // Fetch real leads from the API
+      console.log('Calling leadAPI.getLeads()...');
       const apiLeads = await leadAPI.getLeads();
-      // Log without sensitive data in demo mode
       console.log('API returned leads:', apiLeads.length);
       
       if (apiLeads.length > 0) {
@@ -38,7 +39,6 @@ const Leads = () => {
           cold: apiLeads.filter(lead => lead.score.heat_score === 'cold').length
         };
         setStats(newStats);
-        // Log without sensitive data in demo mode
         console.log('Using real leads from API:', newStats);
       } else {
         // No leads from API - show empty state
@@ -55,6 +55,7 @@ const Leads = () => {
       toast.error('Error loading leads from server');
     } finally {
       setLoading(false);
+      console.log('Finished loading leads');
     }
   };
 

@@ -31,65 +31,21 @@ const Detail = () => {
   const loadLead = async () => {
     setLoading(true);
     try {
-      // In a real implementation, this would fetch from the API
-      // For now, we'll generate sample data
-      const sampleLead = generateSampleLead(id);
-      setLead(sampleLead);
-      
+      // Fetch real lead data from API
+      const response = await leadAPI.getLead(id);
+      if (response.success) {
+        setLead(response.data);
+      } else {
+        toast.error('Lead not found');
+        navigate('/leads');
+      }
     } catch (error) {
+      console.error('Error loading lead:', error);
       toast.error('Error loading lead details');
+      navigate('/leads');
     } finally {
       setLoading(false);
     }
-  };
-
-  const generateSampleLead = (leadId) => {
-    const sources = ['website', 'linkedin', 'referral', 'social', 'email'];
-    const regions = ['US', 'EU', 'APAC', 'LATAM'];
-    const roles = ['manager', 'engineer', 'director', 'analyst', 'consultant'];
-    const campaigns = ['summer_sale', 'tech_conference', 'partner_program', 'webinar_series'];
-    const channels = ['email', 'phone', 'linkedin', 'sms', 'social'];
-    
-    const source = sources[Math.floor(Math.random() * sources.length)];
-    const heatScore = Math.random() > 0.6 ? 'hot' : Math.random() > 0.3 ? 'warm' : 'cold';
-    
-    return {
-      lead_id: leadId,
-      lead_data: {
-        source,
-        recency_days: Math.floor(Math.random() * 30),
-        region: regions[Math.floor(Math.random() * regions.length)],
-        role: roles[Math.floor(Math.random() * roles.length)],
-        campaign: campaigns[Math.floor(Math.random() * campaigns.length)],
-        page_views: Math.floor(Math.random() * 50),
-        last_touch: 'email',
-        prior_course_interest: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)]
-      },
-      score: {
-        lead_id: leadId,
-        heat_score: heatScore,
-        confidence: 0.7 + Math.random() * 0.3,
-        probabilities: {
-          cold: heatScore === 'cold' ? 0.8 : Math.random() * 0.3,
-          warm: heatScore === 'warm' ? 0.8 : Math.random() * 0.3,
-          hot: heatScore === 'hot' ? 0.8 : Math.random() * 0.3
-        },
-        features_importance: {
-          page_views: 0.3 + Math.random() * 0.2,
-          recency_days: 0.2 + Math.random() * 0.2,
-          prior_course_interest: 0.1 + Math.random() * 0.2,
-          source: 0.1 + Math.random() * 0.1
-        }
-      },
-      recommendation: {
-        lead_id: leadId,
-        recommended_channel: channels[Math.floor(Math.random() * channels.length)],
-        message_content: `Thank you for your interest in our ${campaigns[Math.floor(Math.random() * campaigns.length)]} program. Based on your role as a ${roles[Math.floor(Math.random() * roles.length)]} and your high engagement level, I'd love to discuss how we can help you achieve your goals. Are you available for a quick call this week?`,
-        rationale: 'This lead shows high engagement with multiple page views and recent activity. The personalized approach based on their role and interests is recommended for optimal conversion.',
-        citations: ['Email Outreach Best Practices', 'LinkedIn Connection Strategy'],
-        confidence: 0.7 + Math.random() * 0.3
-      }
-    };
   };
 
   const getHeatScoreIcon = (heatScore) => {

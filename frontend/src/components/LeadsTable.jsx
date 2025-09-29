@@ -8,7 +8,9 @@ import {
   TrendingDown,
   Minus,
   Eye,
-  MessageCircle
+  MessageCircle,
+  Calendar,
+  BarChart3
 } from 'lucide-react';
 import ProbabilityBar from './ProbabilityBar';
 import RecommendationPanel from './RecommendationPanel';
@@ -66,9 +68,9 @@ const LeadsTable = ({ leads, loading = false }) => {
   const getHeatScoreIcon = (heatScore) => {
     switch (heatScore) {
       case 'hot':
-        return <TrendingUp className="h-4 w-4 text-danger-500" />;
+        return <TrendingUp className="h-4 w-4 text-red-500" />;
       case 'warm':
-        return <Minus className="h-4 w-4 text-warning-500" />;
+        return <Minus className="h-4 w-4 text-yellow-500" />;
       case 'cold':
         return <TrendingDown className="h-4 w-4 text-gray-400" />;
       default:
@@ -79,288 +81,206 @@ const LeadsTable = ({ leads, loading = false }) => {
   const getHeatScoreColor = (heatScore) => {
     switch (heatScore) {
       case 'hot':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700 border-red-200';
       case 'warm':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
       case 'cold':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
       default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getChannelIcon = (channel) => {
-    switch (channel) {
-      case 'email':
-        return '📧';
-      case 'sms':
-        return '💬'; // WhatsApp icon for SMS
-      case 'linkedin':
-        return '💼';
-      case 'whatsapp':
-        return '💬';
-      case 'social':
-        return '📱';
-      default:
-        return '📧';
-    }
-  };
-
-  const getEmailTypeForLead = (heatScore) => {
-    if (heatScore === "hot" || heatScore === "warm") {
-      return "rag";
-    } else {
-      return "template";
-    }
-  };
-
-  const getEmailTypeColor = (emailType) => {
-    switch (emailType) {
-      case 'rag':
-        return 'bg-green-100 text-green-800';
-      case 'template':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getEmailTypeIcon = (emailType) => {
-    switch (emailType) {
-      case 'rag':
-        return '🤖';
-      case 'template':
-        return '📧';
-      default:
-        return '❓';
-    }
-  };
-
-  const getChannelName = (channel) => {
-    switch (channel) {
-      case 'email':
-        return 'Email';
-      case 'telegram':
-        return 'Telegram';
-      case 'newsletter':
-        return 'Newsletter';
-      default:
-        return 'Email';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   if (loading) {
     return (
-      <div className="card">
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          <span className="ml-3 text-gray-600">Loading leads...</span>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="flex items-center justify-center py-16">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-600 border-t-transparent"></div>
+            <span className="text-gray-600 font-medium">Loading leads...</span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Search and Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search leads..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="input pl-10"
-          />
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Filter className="h-4 w-4 text-gray-400" />
-          <select
-            value={filterHeatScore}
-            onChange={(e) => setFilterHeatScore(e.target.value)}
-            className="input w-auto"
-          >
-            <option value="all">All Heat Scores</option>
-            <option value="hot">Hot</option>
-            <option value="warm">Warm</option>
-            <option value="cold">Cold</option>
-          </select>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, role, region, or campaign..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            />
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <select
+              value={filterHeatScore}
+              onChange={(e) => setFilterHeatScore(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            >
+              <option value="all">All Heat Scores</option>
+              <option value="hot">Hot Leads</option>
+              <option value="warm">Warm Leads</option>
+              <option value="cold">Cold Leads</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="card overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Lead Info
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Lead Information
                 </th>
                 <th 
-                  className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => handleSort('heat_score')}
                 >
-                  <div className="flex items-center space-x-1">
-                    <span>Heat</span>
+                  <div className="flex items-center space-x-2">
+                    <span>Heat Score</span>
                     {sortField === 'heat_score' && (
-                      sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
                     )}
                   </div>
                 </th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email Type
-                </th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Channel Strategy
-                </th>
                 <th 
-                  className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => handleSort('confidence')}
                 >
-                  <div className="flex items-center space-x-1">
-                    <span>Conf</span>
+                  <div className="flex items-center space-x-2">
+                    <span>Confidence</span>
                     {sortField === 'confidence' && (
-                      sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
                     )}
                   </div>
                 </th>
                 <th 
-                  className="hidden md:table-cell px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="hidden md:table-cell px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => handleSort('recency_days')}
                 >
-                  <div className="flex items-center space-x-1">
-                    <span>Days</span>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>Recency</span>
                     {sortField === 'recency_days' && (
-                      sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
                     )}
                   </div>
                 </th>
                 <th 
-                  className="hidden lg:table-cell px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="hidden lg:table-cell px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => handleSort('page_views')}
                 >
-                  <div className="flex items-center space-x-1">
-                    <span>Views</span>
+                  <div className="flex items-center space-x-2">
+                    <BarChart3 className="h-4 w-4" />
+                    <span>Engagement</span>
                     {sortField === 'page_views' && (
-                      sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
                     )}
                   </div>
                 </th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Channel
-                </th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {paginatedLeads.map((lead, index) => (
-                <tr key={lead.lead_id || lead.lead_data?.lead_id || index} className="hover:bg-gray-50">
-                  <td className="px-3 py-3">
-                    <div className="text-sm font-medium text-gray-900 truncate">
-                      {lead.lead_data.name || 'Unknown Name'}
-                    </div>
-                      <div className="text-xs text-gray-500 truncate">
-                        {lead.lead_data.email ? '***@***.***' : 'No email'}
+                <tr key={lead.lead_id || lead.lead_data?.lead_id || index} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-gray-900 truncate">
+                          {lead.lead_data.name || 'Unknown Name'}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">
+                          {lead.lead_data.email ? '***@***.***' : 'No email'}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">
+                          📱 {lead.lead_data.phone ? '***-***-****' : 'No phone'}
+                        </div>
+                        <div className="text-xs text-gray-400 truncate mt-1">
+                          {lead.lead_data.role} • {lead.lead_data.region}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
-                        📱 {lead.lead_data.phone ? '***-***-****' : 'No phone'}
-                      </div>
-                    <div className="text-xs text-gray-400 truncate">
-                      {lead.lead_data.role} • {lead.lead_data.region}
                     </div>
                   </td>
                   
-                  
-                  <td className="px-2 py-3">
-                    <div className="flex items-center space-x-1">
+                  <td className="px-4 py-4">
+                    <div className="flex items-center space-x-2">
                       {getHeatScoreIcon(lead.score.heat_score)}
-                      <span className={`inline-flex px-1.5 py-0.5 text-xs font-semibold rounded-full ${getHeatScoreColor(lead.score.heat_score)}`}>
+                      <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getHeatScoreColor(lead.score.heat_score)}`}>
                         {lead.score.heat_score.toUpperCase()}
                       </span>
                     </div>
                   </td>
                   
-                <td className="px-2 py-3">
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm">{getEmailTypeIcon(getEmailTypeForLead(lead.score.heat_score))}</span>
-                    <span className={`inline-flex px-1.5 py-0.5 text-xs font-semibold rounded-full ${getEmailTypeColor(getEmailTypeForLead(lead.score.heat_score))}`}>
-                      {getEmailTypeForLead(lead.score.heat_score).toUpperCase()}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-2 py-3">
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm">
-                      {lead.score.heat_score === "hot" && "📱"}
-                      {lead.score.heat_score === "warm" && "📧"}
-                      {lead.score.heat_score === "cold" && "📰"}
-                    </span>
-                    <span className={`inline-flex px-1.5 py-0.5 text-xs font-semibold rounded-full ${
-                      lead.score.heat_score === "hot" ? "bg-red-100 text-red-800" :
-                      lead.score.heat_score === "warm" ? "bg-blue-100 text-blue-800" :
-                      "bg-gray-100 text-gray-800"
-                    }`}>
-                      {lead.score.heat_score === "hot" && "Telegram"}
-                      {lead.score.heat_score === "warm" && "RAG Email"}
-                      {lead.score.heat_score === "cold" && "Newsletter"}
-                    </span>
-                  </div>
-                </td>
-                  
-                  <td className="px-2 py-3">
-                    <div className="text-xs text-gray-900">
-                      {(lead.score.confidence * 100).toFixed(0)}%
+                  <td className="px-4 py-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${lead.score.confidence * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-medium text-gray-900 min-w-[3rem]">
+                        {(lead.score.confidence * 100).toFixed(0)}%
+                      </span>
                     </div>
                   </td>
                   
-                  <td className="hidden md:table-cell px-2 py-3 text-xs text-gray-900">
-                    {lead.lead_data.recency_days}d
+                  <td className="hidden md:table-cell px-4 py-4">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-900">
+                        {lead.lead_data.recency_days}d ago
+                      </span>
+                    </div>
                   </td>
                   
-                  <td className="hidden lg:table-cell px-2 py-3 text-xs text-gray-900">
-                    {lead.lead_data.page_views}
+                  <td className="hidden lg:table-cell px-4 py-4">
+                    <div className="flex items-center space-x-2">
+                      <BarChart3 className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-900">
+                        {lead.lead_data.page_views} views
+                      </span>
+                    </div>
                   </td>
                   
-                  <td className="px-2 py-3">
-                    {lead.recommendation && (
-                      <div className="flex items-center space-x-1">
-                        <span className="text-sm">{getChannelIcon(lead.recommendation.recommended_channel)}</span>
-                        <span className="text-xs font-medium text-gray-900 truncate">
-                          {getChannelName(lead.recommendation.recommended_channel)}
-                        </span>
-                      </div>
-                    )}
-                  </td>
-                  
-                  <td className="px-2 py-3 text-sm font-medium">
-                    <div className="flex items-center space-x-1">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-2">
                       <button
                         onClick={() => {
                           setViewMode('view');
                           setSelectedLead(lead);
                         }}
-                        className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-primary-500 transition-colors duration-200"
-                        title="View Details"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        title="View Lead Details (No RAG Loading)"
                       >
-                        <Eye className="h-3 w-3" />
+                        <Eye className="h-4 w-4" />
                       </button>
-                      {lead.recommendation && (
-                        <button
-                          onClick={() => {
-                            setViewMode('message');
-                            setSelectedLead(lead);
-                          }}
-                          className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-primary-500 transition-colors duration-200"
-                          title={`Send ${lead.score.heat_score === "hot" ? "Telegram Message" : lead.score.heat_score === "warm" ? "RAG Email" : "Newsletter"}`}
-                        >
-                          <MessageCircle className="h-3 w-3" />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => {
+                          setViewMode('message');
+                          setSelectedLead(lead);
+                        }}
+                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        title="Generate RAG-Powered Personalized Message"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -370,26 +290,30 @@ const LeadsTable = ({ leads, loading = false }) => {
         </div>
         
         {sortedAndFilteredLeads.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-500">No leads found matching your criteria</div>
+          <div className="text-center py-16">
+            <div className="text-gray-400 mb-2">
+              <Users className="h-12 w-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No leads found</h3>
+            <p className="text-gray-500">Try adjusting your search criteria or filters</p>
           </div>
         )}
 
         {/* Pagination Controls */}
         {sortedAndFilteredLeads.length > 0 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -397,12 +321,12 @@ const LeadsTable = ({ leads, loading = false }) => {
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
-                  <span className="font-medium">{Math.min(endIndex, sortedAndFilteredLeads.length)}</span> of{' '}
-                  <span className="font-medium">{sortedAndFilteredLeads.length}</span> results
+                  Showing <span className="font-semibold">{startIndex + 1}</span> to{' '}
+                  <span className="font-semibold">{Math.min(endIndex, sortedAndFilteredLeads.length)}</span> of{' '}
+                  <span className="font-semibold">{sortedAndFilteredLeads.length}</span> results
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <label htmlFor="items-per-page" className="text-sm text-gray-700 mr-2">
                     Show:
@@ -414,7 +338,7 @@ const LeadsTable = ({ leads, loading = false }) => {
                       setItemsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                    className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value={5}>5</option>
                     <option value={10}>10</option>
@@ -422,16 +346,14 @@ const LeadsTable = ({ leads, loading = false }) => {
                     <option value={50}>50</option>
                   </select>
                 </div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <nav className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px" aria-label="Pagination">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <span className="sr-only">Previous</span>
-                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                    <ChevronDown className="h-4 w-4 rotate-90" />
                   </button>
                   
                   {/* Page numbers */}
@@ -451,9 +373,9 @@ const LeadsTable = ({ leads, loading = false }) => {
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors ${
                           currentPage === pageNum
-                            ? 'z-10 bg-primary-50 border-primary-500 text-primary-600'
+                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                             : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                         }`}
                       >
@@ -465,12 +387,10 @@ const LeadsTable = ({ leads, loading = false }) => {
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <span className="sr-only">Next</span>
-                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
+                    <ChevronDown className="h-4 w-4 -rotate-90" />
                   </button>
                 </nav>
               </div>

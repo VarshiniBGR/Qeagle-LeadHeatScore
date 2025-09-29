@@ -4,7 +4,7 @@ const API_BASE_URL = '/api/v1';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 30000,
+    timeout: 15000,  // Reduced from 30s to 15s
     headers: {
         'Content-Type': 'application/json',
     },
@@ -51,7 +51,7 @@ export const leadAPI = {
         return response.data;
     },
 
-    // Upload CSV file
+    // Upload CSV file (optimized - should be very fast now)
     uploadCSV: async (file) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -60,20 +60,24 @@ export const leadAPI = {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
+            timeout: 10000  // Reduced to 10 seconds - should be much faster now
         });
         return response.data;
     },
 
-    // Batch score leads
+    // Batch score leads (increased timeout for processing)
     batchScoreLeads: async (leadsData) => {
-        const response = await api.post('/batch-score', leadsData);
+        const response = await api.post('/batch-score', leadsData, {
+            timeout: 120000  // 2 minutes timeout for batch processing
+        });
         return response.data;
     },
 
-    // Get leads
+    // Get leads (increased timeout for processing)
     getLeads: async (limit = 100, offset = 0) => {
         const response = await api.get('/leads', {
-            params: { limit, offset }
+            params: { limit, offset },
+            timeout: 30000  // Increased to 30 seconds for leads processing
         });
         return response.data;
     },
@@ -81,6 +85,18 @@ export const leadAPI = {
     // Get specific lead
     getLead: async (leadId) => {
         const response = await api.get(`/leads/${leadId}`);
+        return response.data;
+    },
+
+    // Clear all leads
+    clearAllLeads: async () => {
+        const response = await api.delete('/leads/clear');
+        return response.data;
+    },
+
+    // Generate recommendation for a specific lead
+    generateLeadRecommendation: async (leadId) => {
+        const response = await api.post(`/leads/${leadId}/recommendation`);
         return response.data;
     },
 
@@ -123,9 +139,11 @@ export const leadAPI = {
 
 // System API
 export const systemAPI = {
-    // Health check
+    // Health check (use proxy for consistency)
     healthCheck: async () => {
-        const response = await api.get('/health');
+        const response = await api.get('/health', {
+            timeout: 10000  // Increased to 10 seconds for health check
+        });
         return response.data;
     },
 
