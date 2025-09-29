@@ -4,7 +4,7 @@ REM Lead HeatScore - Windows Setup Script
 REM Sets up the complete RAG-powered Lead HeatScore system
 
 echo.
-echo 🚀 Lead HeatScore Setup Starting...
+echo  Lead HeatScore Setup Starting...
 
 REM Check for Python 3.10+
 python --version >nul 2>&1
@@ -70,7 +70,7 @@ echo [SUCCESS] Frontend built successfully
 cd ..
 
 echo.
-echo [SUCCESS] 🎉 Setup completed successfully!
+echo [SUCCESS]  Setup completed successfully!
 echo.
 echo Next steps:
 echo 1. Update backend\.env with your API keys
@@ -78,8 +78,8 @@ echo 2. Start backend: cd backend ^&^& venv\Scripts\activate ^&^& uvicorn app.ma
 echo 3. Start frontend: cd frontend ^&^& npm run dev
 echo 4. Open http://localhost:5173
 echo.
-echo 📖 Documentation: docs\API_DOCUMENTATION.md
-echo 🔧 Postman Collection: docs\Lead_HeatScore_API.postman_collection.json
+echo  Documentation: docs\API_DOCUMENTATION.md
+echo Interactive Testing: http://localhost:8000/docs (Swagger UI)
 echo.
 
 pause
