@@ -109,10 +109,7 @@ This project uses **OpenAI's premium models** for superior performance:
 5. Get connection string and add to `.env` file
 6. Create vector search index for embeddings
 
-## Architecture
 
-![System Architecture](architecture_diagram.html)
 
-*Architecture diagram available as `architecture_diagram.html` in project root*
 
 
