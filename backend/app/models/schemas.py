@@ -110,6 +110,19 @@ class MetricsResponse(BaseModel):
     last_updated: datetime
 
 
+class TextChunk(BaseModel):
+    """Schema for text chunks."""
+    chunk_id: str
+    source_id: str
+    chunk_index: int
+    total_chunks: int
+    text: str
+    start_pos: int
+    end_pos: int
+    token_count: int
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class KnowledgeDocument(BaseModel):
     """Knowledge base document."""
     id: str

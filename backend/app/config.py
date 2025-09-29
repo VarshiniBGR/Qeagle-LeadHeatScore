@@ -11,23 +11,23 @@ class Settings(BaseSettings):
     mongo_vector_index: str = "vector_index"
     
     # ML Configuration
-    embedding_model_name: str = "text-embedding-3-small"  # Latest OpenAI embedding model
-    model_dir: str = "./models"
+    embedding_model_name: str = "text-embedding-3-small"  # Latest OpenAI embedding model (80% cheaper)
+    model_dir: str = "./backend/models"
     class_thresholds: str = "hot:0.8,warm:0.5"
     
-    # AI/LLM Configuration - OpenAI Only
-    openai_api_key: str = "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"
+    # AI/LLM Configuration - OpenAI Only (Optimized)
+    openai_api_key: str = "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"
     vector_backend: str = "mongo"
     
-    # OpenAI Model Configuration
-    llm_model: str = "gpt-4o-mini"  # Latest cost-effective GPT-4 model
+    # OpenAI Model Configuration (Primary)
+    llm_model: str = "gpt-4o-mini"  # Cost-effective, high-quality
     llm_temperature: float = 0.3
-    llm_max_tokens: int = 800  # Increased for better quality
+    llm_max_tokens: int = 100  # Ultra-fast RAG generation
     
     # RAG Email Configuration - OpenAI Mode
     enable_rag_emails: bool = True
     rag_email_fallback: bool = False  # Disabled for premium quality
-    rag_email_timeout: int = 60  # Increased timeout for GPT-4
+    rag_email_timeout: int = 15  # Reduced timeout for faster responses
     
     # Telegram Bot Configuration
     telegram_bot_token: str = ""
@@ -58,6 +58,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        protected_namespaces = ('settings_',)
     
     def get_thresholds(self) -> Dict[str, float]:
         """Parse class thresholds from string format."""

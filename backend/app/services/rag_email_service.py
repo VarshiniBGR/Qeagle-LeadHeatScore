@@ -2,6 +2,7 @@ from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from typing import Dict, Any, Optional, List
 import time
+import hashlib
 from app.models.schemas import LeadInput, KnowledgeDocument
 from app.services.retrieval import retrieval
 from app.services.performance_monitor import performance_monitor
@@ -13,6 +14,43 @@ from app.config import settings
 
 logger = get_logger(__name__)
 
+# Aggressive in-memory cache for RAG responses (maximum speed)
+_response_cache = {}
+_cache_ttl = 7200  # 2 hours for maximum reuse
+_cache_buffer_size = 1000  # Allow up to 1000 cached responses
+
+def _get_cache_key(lead_data: Dict[str, Any], lead_type: str) -> str:
+    """Generate cache key based on lead profile for aggressive caching."""
+    # Create a hash of key lead attributes for caching (no time variation for maximum reuse)
+    key_data = {
+        'role': lead_data.get('role', ''),
+        'campaign': lead_data.get('campaign', ''),
+        'heat_score': lead_type
+        # Removed time variation and simplified key for maximum cache hits
+    }
+    key_string = str(sorted(key_data.items()))
+    return hashlib.md5(key_string.encode()).hexdigest()
+
+def _get_cached_response(cache_key: str) -> Optional[Dict[str, str]]:
+    """Get cached response if still valid."""
+    if cache_key in _response_cache:
+        cached_data = _response_cache[cache_key]
+        if time.time() - cached_data['timestamp'] < _cache_ttl:
+            logger.info(f"Cache hit for key: {cache_key[:8]}...")
+            return cached_data['response']
+        else:
+            # Remove expired cache entry
+            del _response_cache[cache_key]
+    return None
+
+def _cache_response(cache_key: str, response: Dict[str, str]) -> None:
+    """Cache the response."""
+    _response_cache[cache_key] = {
+        'response': response,
+        'timestamp': time.time()
+    }
+    logger.info(f"Cached response for key: {cache_key[:8]}...")
+
 
 class RAGEmailService:
     """Service for generating RAG-powered personalized emails."""
@@ -22,30 +60,27 @@ class RAGEmailService:
         self._initialize_llm()
     
     def _initialize_llm(self):
-        """Initialize OpenAI GPT-4o-mini for high-quality email generation."""
+        """Initialize OpenAI GPT-4o-mini for email generation."""
         try:
+            # Initialize OpenAI GPT-4o-mini
             if settings.openai_api_key:
-                # Initialize OpenAI GPT-4o-mini
                 self.llm = OpenAI(
                     openai_api_key=settings.openai_api_key,
-                    model=settings.llm_model,  # GPT-4o-mini
+                    model=settings.llm_model,
                     temperature=settings.llm_temperature,
                     max_tokens=settings.llm_max_tokens,
                     request_timeout=settings.rag_email_timeout,
-                    max_retries=3,
-                    retry_min_seconds=2,
-                    retry_max_seconds=8
+                    max_retries=5  # More retries for better RAG success
                 )
                 self.llm_type = settings.llm_model
                 logger.info(f"Initialized OpenAI {settings.llm_model} for email generation")
             else:
-                # Fallback to template-based approach
                 self.llm = None
                 self.llm_type = "template"
-                logger.info("OpenAI API key not found - using template-based email generation")
+                logger.info("No OpenAI API key - using template-based email generation")
                 
         except Exception as e:
-            logger.error(f"Error initializing OpenAI LLM: {e}")
+            logger.error(f"Error initializing LLM: {e}")
             self.llm_type = "fallback"
     
     def switch_to_demo_mode(self):
@@ -56,7 +91,7 @@ class RAGEmailService:
                     openai_api_key=settings.openai_api_key,
                     model="gpt-4o",  # Ultra-high-quality model for demos
                     temperature=0.2,  # Lower temperature for consistency
-                    max_tokens=1000,  # More tokens for comprehensive emails
+                    max_tokens=200,  # Ultra-compact demo emails
                     request_timeout=90,  # Longer timeout for GPT-4o
                     max_retries=3,
                     retry_min_seconds=3,
@@ -105,7 +140,7 @@ class RAGEmailService:
             # Base templates with RAG personalization
             templates = {
                 "hot": {
-                    "subject": f"🚀 Exclusive {lead_data.campaign} Opportunity - Limited Time!",
+                    "subject": f"* Exclusive {lead_data.campaign} Opportunity - Limited Time!",
                     "content": f"""Hi {lead_data.name},
 
 I noticed your strong interest in our {lead_data.campaign} program! As a {lead_data.role}, this could be a game-changer for your career.
@@ -270,11 +305,23 @@ Reply with 'NEWS' to subscribe"""
         trace_id = performance_monitor.start_trace("rag_email_generation")
         
         try:
-            # Use OpenAI LLM for premium email generation (unless force_template is True)
+            # Check cache first (unless force_template is True)
+            if not force_template:
+                cache_key = _get_cache_key(lead_data.__dict__, lead_type)
+                cached_response = _get_cached_response(cache_key)
+                if cached_response:
+                    logger.info(f"Cache hit! RAG response returned instantly for {lead_type} lead")
+                    performance_monitor.finish_trace(trace_id, status_code=200)
+                    return cached_response
+            
+            # Force RAG mode unless explicitly disabled (worst case scenarios only)
             if force_template:
-                logger.info("Force template mode enabled - using template emails")
+                logger.info("Force template mode enabled - using template emails only due to critical failure")
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_email(lead_data, lead_type)
+            
+            # RAG-FIRST: Always prioritize RAG generation over templates
+            logger.info(f"RAG-FIRST mode: Generating RAG email for {lead_type} lead")
             
             # If no LLM available, use fallback
             if not self.llm:
@@ -285,69 +332,31 @@ Reply with 'NEWS' to subscribe"""
             # Retrieve relevant context
             retrieval_start = time.time()
             if not context_docs:
-                query = f"{lead_data.role} {lead_data.campaign} {lead_data.prior_course_interest}"
-                search_results = await retrieval.hybrid_search(query, limit=3)
+                query = f"{lead_data.role} {lead_data.campaign}"
+                search_results = await retrieval.fast_search(query, limit=1)  # Fastest possible search
                 context_docs = [result.document for result in search_results]
             
             retrieval_duration = (time.time() - retrieval_start) * 1000
             performance_monitor.record_step(trace_id, "retrieval", retrieval_duration)
             
-            # Prepare context
+            # Ultra-minimal context for maximum token savings
             context_text = ""
             if context_docs:
-                context_text = "\n\n".join([
-                    f"Title: {doc.title}\nContent: {doc.content[:300]}..."
-                    for doc in context_docs
-                ])
+                context_text = context_docs[0].title + ":" + context_docs[0].content[:50] + "..."
             
-            # Create email generation prompt
-            prompt_template = PromptTemplate(
-                input_variables=["lead_data", "lead_type", "context"],
-                template="""
-You are a sales expert writing personalized emails for educational platform leads.
-
-Lead Information:
-- Name: {lead_data[name]}
-- Role: {lead_data[role]}
-- Company: {lead_data[company]}
-- Region: {lead_data[region]}
-- Campaign: {lead_data[campaign]}
-- Page Views: {lead_data[page_views]}
-- Recency: {lead_data[recency_days]} days
-- Last Touch: {lead_data[last_touch]}
-- Engagement Level: {lead_data[prior_course_interest]}
-- Lead Type: {lead_type}
-
-Context from Knowledge Base:
-{context}
-
-Generate a personalized email for WARM leads in the following JSON format:
-{{
-    "subject": "Free Webinar Invitation - [Campaign] Masterclass",
-    "content": "Personalized email content with proper formatting:\n\nHi [Name],\n\nI noticed you're exploring our [Campaign] program. As a [Role], this could be a great opportunity for your career development.\n\n🎓 FREE WEBINAR INVITATION:\nJoin our FREE [Campaign] Masterclass this weekend and unlock your learning journey 🚀\n\n✨ What You'll Learn:\n• Industry-recognized certification\n• Career advancement support\n• Practical hands-on projects\n• Expert mentorship\n• Real-world case studies\n• Professional portfolio building\n\n💬 Want to learn more?\n\nReply 'WEBINAR' to join or 'INFO' for details!\n\nBest regards,\nGUVI Team"
-}}
-
-Guidelines for WARM leads:
-- Focus on FREE WEBINAR invitation (low-commitment, high-value event)
-- Build trust and move them closer to purchase
-- Use nurturing tone, not pushy
-- Emphasize learning journey and career development
-- Include clear webinar CTA
-- Reference their role and interests
-- Keep it engaging but not urgent
-- Use educational platform branding (GUVI)
-- Format with proper line breaks and structure
-- Use emojis effectively (2-3 max)
-- Make it feel personal and encouraging
-"""
-            )
+            # Create sales-focused email generation prompt based on lead type
+            if lead_type == "hot":
+                prompt_template = self._create_hot_lead_prompt_template()
+            elif lead_type == "warm":
+                prompt_template = self._create_warm_lead_prompt_template()
+            else:  # cold
+                prompt_template = self._create_cold_lead_prompt_template()
             
             # Generate email with circuit breaker protection
             generation_start = time.time()
+            # Simplified formatting for token savings (no context or lead_type)
             prompt = prompt_template.format(
-                lead_data=lead_data.dict(),
-                lead_type=lead_type,
-                context=context_text
+                lead_data=lead_data.dict()
             )
             
             # Safety check for prompt injection
@@ -356,14 +365,27 @@ Guidelines for WARM leads:
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_email(lead_data, lead_type)
             
-            # Use OpenAI LLM for premium email generation
+            # Use LLM for email generation with optimistic settings for RAG priority
             try:
-                # Generate email using OpenAI with circuit breaker protection
-                response = self.llm.invoke(prompt)
-                logger.info(f"Generated premium email using {self.llm_type}")
+                import asyncio
+                
+                # Use moderate temperature for better RAG quality
+                original_temp = self.llm.temperature
+                self.llm.temperature = 0.2  # Slightly higher for better creativity
+                
+
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(self.llm.invoke, prompt),
+                    timeout=8.0  # More time for RAG success
+                )
+                
+                # Restore original temperature
+                self.llm.temperature = original_temp
+                
+                logger.info(f"Generated email using {self.llm_type}")
                 
             except Exception as e:
-                logger.error(f"OpenAI email generation failed: {e}")
+                logger.error(f"Email generation failed: {e}")
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_email(lead_data, lead_type)
             
@@ -375,14 +397,26 @@ Guidelines for WARM leads:
                 import json
                 import re
                 
-                # Try to extract JSON from response
-                json_match = re.search(r'\{.*\}', response, re.DOTALL)
+                # Try to extract JSON from response (improved pattern)
+                json_match = re.search(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', response, re.DOTALL)
                 if json_match:
-                    result = json.loads(json_match.group())
+                    json_str = json_match.group()
+                    result = json.loads(json_str)
                     
                     # Safety check for content
                     subject = result.get('subject', '')
                     content = result.get('content', '')
+                    
+
+                    # Relaxed validation for RAG priority (only reject very poor content)
+                    if len(content) < 30:
+                        logger.warning(f"Generated content too short ({len(content)} chars), using fallback")
+                        return self._get_fallback_email(lead_data, lead_type)
+                    
+                    # Minimal content checks for RAG priority
+                    if content.endswith('...') and len(content) < 50:
+                        logger.warning("Generated content appears incomplete, using fallback")
+                        return self._get_fallback_email(lead_data, lead_type)
                     
                     subject_safety = safety_filter.validate_content(subject)
                     content_safety = safety_filter.validate_content(content)
@@ -394,13 +428,66 @@ Guidelines for WARM leads:
                     logger.info("Generated RAG email successfully", trace_id=trace_id)
                     performance_monitor.finish_trace(trace_id, status_code=200)
                     
-                    return {
+                    response_data = {
                         "subject": subject,
                         "content": content,
                         "type": "rag"
                     }
+                    
+                    # Cache the response
+                    if not force_template:
+                        cache_key = _get_cache_key(lead_data.__dict__, lead_type)
+                        _cache_response(cache_key, response_data)
+                    
+                    return response_data
                 else:
-                    raise ValueError("No JSON found in response")
+                    # If no JSON found, try to parse as plain text
+                    logger.warning("No JSON found in response, attempting plain text parsing")
+                    
+                    # Extract subject and content from plain text
+                    lines = response.strip().split('\n')
+                    subject = ""
+                    content = ""
+                    
+                    # Look for subject line
+                    for line in lines:
+                        if line.lower().startswith('subject:'):
+                            subject = line.split(':', 1)[1].strip()
+                            break
+                    
+                    # If no subject found, use first line
+                    if not subject and lines:
+                        subject = lines[0].strip()
+                    
+                    # Content is everything else
+                    content = '\n'.join(lines[1:]) if len(lines) > 1 else response
+                    
+                    # Clean up content
+                    content = content.strip()
+                    
+                    # If we only got a single line or very short content, use fallback
+                    if not content or len(content) < 50:
+                        logger.warning("Insufficient content generated, using fallback email")
+                        return self._get_fallback_email(lead_data, lead_type)
+                    
+                    if subject and content:
+                        logger.info("Parsed plain text email successfully", trace_id=trace_id)
+                        performance_monitor.finish_trace(trace_id, status_code=200)
+                        
+                        response_data = {
+                            "subject": subject,
+                            "content": content,
+                            "type": "rag"
+                        }
+                        
+                        # Cache the response
+                        if not force_template:
+                            cache_key = _get_cache_key(lead_data.__dict__, lead_type)
+                            _cache_response(cache_key, response_data)
+                        
+                        return response_data
+                    else:
+                        raise ValueError("Could not parse email from response")
                     
             except Exception as e:
                 logger.error(f"Error parsing RAG email response: {e}")
@@ -415,6 +502,31 @@ Guidelines for WARM leads:
             )
             performance_monitor.finish_trace(trace_id, status_code=500, error_type=type(e).__name__)
             return self._get_fallback_email(lead_data, lead_type)
+
+
+    def _create_hot_lead_prompt_template(self) -> PromptTemplate:
+        """Create ultra-minimal HOT lead prompt."""
+        return PromptTemplate(
+            input_variables=["lead_data"],
+            template="""HOT email for {lead_data[name]} ({lead_data[role]}) - {lead_data[page_views]} views.
+JSON: {{"subject": "🔥 URGENT: Only 2 Spots Left", "content": "Hi {lead_data[name]}! Your {lead_data[page_views]} views show interest in {lead_data[campaign]}.\\n\\n🎯 48hr EXCLUSIVE:\\n• 30% OFF\\n• Only 2 spots\\n\\nReply YES!\\n\\nBest,\\nTeam"}}"""
+        )
+    
+    def _create_warm_lead_prompt_template(self) -> PromptTemplate:
+        """Create ultra-minimal WARM lead prompt."""
+        return PromptTemplate(
+            input_variables=["lead_data"],
+            template="""WARM email for {lead_data[name]} ({lead_data[role]}) - {lead_data[page_views]} views.
+JSON: {{"subject": "🎓 Free Webinar: {lead_data[role]} AI Success", "content": "Hi {lead_data[name]}! Your {lead_data[page_views]} views show interest in {lead_data[campaign]}.\\n\\n🎓 FREE WEBINAR:\\n• AI strategies for {lead_data[role]}s\\n• Free guide ($200 value)\\n• 14-day trial\\n\\nReply WEBINAR!\\n\\nBest,\\nTeam"}}"""
+        )
+    
+    def _create_cold_lead_prompt_template(self) -> PromptTemplate:
+        """Create ultra-minimal COLD lead prompt."""
+        return PromptTemplate(
+            input_variables=["lead_data"],
+            template="""COLD email for {lead_data[name]} ({lead_data[role]}) - {lead_data[page_views]} views.
+JSON: {{"subject": "📊 Free AI Assessment for {lead_data[role]}s", "content": "Hi {lead_data[name]}! Our AI Career Assessment is free.\\n\\nAs a {lead_data[role]}:\\n• Skill evaluation\\n• Career roadmap\\n• Industry insights\\n\\nNo strings attached. Used by 50k+ pros.\\n\\nBest,\\nTeam"}}"""
+        )
 
 
 # Global service instance

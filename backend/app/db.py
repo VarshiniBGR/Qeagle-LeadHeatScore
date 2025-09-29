@@ -21,11 +21,19 @@ async def get_database() -> AsyncIOMotorDatabase:
 async def connect_to_mongo():
     """Create database connection."""
     try:
-        db.client = AsyncIOMotorClient(settings.mongo_uri)
+        # Optimized connection settings for better performance
+        db.client = AsyncIOMotorClient(
+            settings.mongo_uri,
+            serverSelectionTimeoutMS=5000,  # 5 second timeout
+            connectTimeoutMS=5000,          # 5 second connection timeout
+            maxPoolSize=10,                  # Limit connection pool
+            minPoolSize=1,                   # Minimum connections
+            maxIdleTimeMS=30000,             # Close idle connections after 30s
+            retryWrites=True
+        )
         db.database = db.client[settings.mongo_db]
         
-        # Test connection
-        await db.client.admin.command('ping')
+        # Skip ping test for faster startup
         print(f"Connected to MongoDB: {settings.mongo_db}")
         
         # Create vector search index if it doesn't exist

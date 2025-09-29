@@ -56,33 +56,33 @@ class PolicyDocumentService:
             },
             "channel_rules": {
                 HeatScore.HOT: {
-                    "primary_channel": "telegram",
+                    "primary_channel": "email",  # All leads use email/WhatsApp
                     "secondary_channel": "email",
-                    "reasoning": "immediate_response_needed"
+                    "reasoning": "unified_channel_with_personalization"
                 },
                 HeatScore.WARM: {
-                    "primary_channel": "rag_email",
-                    "secondary_channel": "email",
-                    "reasoning": "detailed_personalization_needed"
+                    "primary_channel": "email",  # All leads use email/WhatsApp
+                    "secondary_channel": "email", 
+                    "reasoning": "unified_channel_with_personalization"
                 },
                 HeatScore.COLD: {
-                    "primary_channel": "newsletter",
+                    "primary_channel": "email",  # All leads use email/WhatsApp
                     "secondary_channel": "email",
-                    "reasoning": "low_touch_educational_content"
+                    "reasoning": "unified_channel_with_personalization"
                 }
             },
             "message_length_rules": {
                 HeatScore.HOT: {
-                    "telegram": "short_urgent",
-                    "email": "medium_personal"
+                    "email": "short_urgent",
+                    "whatsapp": "short_urgent"
                 },
                 HeatScore.WARM: {
-                    "rag_email": "detailed_personalized",
-                    "email": "medium_informative"
+                    "email": "medium_personalized",
+                    "whatsapp": "medium_personalized"
                 },
                 HeatScore.COLD: {
-                    "newsletter": "educational_comprehensive",
-                    "email": "short_informative"
+                    "email": "detailed_educational",
+                    "whatsapp": "detailed_educational"
                 }
             }
         }

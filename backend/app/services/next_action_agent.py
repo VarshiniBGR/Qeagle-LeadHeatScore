@@ -12,7 +12,7 @@ from app.services.performance_monitor import performance_monitor
 from app.services.circuit_breaker import openai_circuit_breaker
 from app.services.policy_service import policy_service
 from app.services.persona_service import persona_service
-from app.services.telegram_service import telegram_service
+# Telegram service removed - not used
 from app.utils.safety import safety_filter
 from app.utils.logging import get_logger
 from app.config import settings
@@ -91,19 +91,9 @@ class NextActionAgent:
             logger.error(f"Error initializing LLM: {e}")
     
     def _get_channel_recommendation(self, lead_data: LeadInput, heat_score: HeatScore) -> Channel:
-        """Determine recommended channel based on heat score using policy document."""
-        # Use policy service to get optimal channel
-        optimal_channel = policy_service.get_optimal_channel(heat_score)
-        
-        # Map to Channel enum
-        channel_mapping = {
-            "telegram": Channel.TELEGRAM,
-            "rag_email": Channel.EMAIL,  # RAG emails are still emails
-            "newsletter": Channel.NEWSLETTER,
-            "email": Channel.EMAIL
-        }
-        
-        return channel_mapping.get(optimal_channel, Channel.EMAIL)
+        """Determine recommended channel - all leads use email/WhatsApp with RAG personalization."""
+        # All leads use the same channel (email/WhatsApp) with RAG personalization
+        return Channel.EMAIL
     
     def _get_fallback_recommendation(
         self, 
@@ -113,43 +103,42 @@ class NextActionAgent:
         """Generate fallback recommendation without LLM."""
         channel = self._get_channel_recommendation(lead_data, heat_score)
         
-        # Generate standardized messages based on heat score
+        # Generate RAG-personalized messages based on heat score
         if heat_score == HeatScore.HOT:
-            # Hot leads: Telegram message
-            message = f"""👋 Hi {lead_data.name}!
+            # Hot leads: Urgent, direct RAG message
+            message = f"""Hi {lead_data.name}!
 
-🎯 I noticed your interest in our {lead_data.campaign} program.
+I noticed your strong interest in our {lead_data.campaign} program. As a {lead_data.role}, this could be perfect for your career growth.
 
-📊 Based on your profile as a {lead_data.role}, I believe this could be perfect for your career growth.
+Based on your profile and {lead_data.prior_course_interest} interest level, I'd like to offer you a personalized consultation to discuss how our program can help you achieve your goals.
 
-✨ What You Get:
-• 🎓 Complete {lead_data.campaign} certification
-• 👨‍💼 Career guidance & placement support  
-• 💡 Practical hands-on projects
-• 🤝 Expert mentorship program
-• 📊 Real-world case studies
-• 🏆 Industry-recognized certificate
-
-📞 Contact Us:
-• 📱 Phone: +1-800-LEADHEAT
-• 📧 Email: support@leadheatscore.com
-• 🌐 Website: www.leadheatscore.com
-
-🚀 Ready to advance your career? 
-
-Reply 'YES' to get started or 'INFO' for more details!
+Would you be available for a quick call this week?
 
 Best regards,
 LeadHeatScore Team"""
-            rationale = "Hot lead - Telegram outreach with immediate call-to-action"
+            rationale = "Hot lead - RAG-personalized urgent outreach"
         elif heat_score == HeatScore.WARM:
-            # Warm leads: RAG Email message
-            message = f"Hi {lead_data.name}! Thank you for your interest in our {lead_data.campaign} program. As a {lead_data.role}, I believe you'd find our resources particularly valuable. I'd like to share some additional information that might be relevant to your goals. Would you be interested in learning more? 📚"
-            rationale = "Warm lead - RAG email for personalized nurturing"
+            # Warm leads: Nurturing RAG message
+            message = f"""Hi {lead_data.name}!
+
+Thank you for your interest in our {lead_data.campaign} program. As a {lead_data.role}, I believe you'd find our resources particularly valuable.
+
+I'd like to share some additional information that might be relevant to your goals. Would you be interested in learning more about our personalized learning paths?
+
+Best regards,
+LeadHeatScore Team"""
+            rationale = "Warm lead - RAG-personalized nurturing message"
         else:
-            # Cold leads: Newsletter content
-            message = f"Hi {lead_data.name}! I hope you're doing well. I wanted to share some valuable resources that might be relevant for your role as a {lead_data.role}. Stay updated with our newsletter for regular insights and valuable content."
-            rationale = "Cold lead - Newsletter content for low-touch nurturing"
+            # Cold leads: Educational RAG message
+            message = f"""Hi {lead_data.name}!
+
+I hope you're doing well. I wanted to share some valuable resources that might be relevant for your role as a {lead_data.role}.
+
+Our {lead_data.campaign} program offers comprehensive learning paths designed for professionals like you. Would you like to receive our educational newsletter with industry insights?
+
+Best regards,
+LeadHeatScore Team"""
+            rationale = "Cold lead - RAG-personalized educational outreach"
         
         return Recommendation(
             lead_id=str(hash(str(lead_data.dict()))),
@@ -178,27 +167,15 @@ LeadHeatScore Team"""
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_recommendation(lead_data, lead_score.heat_score)
             
-            # Retrieve relevant context with timing and cross-encoder reranking
+            # Retrieve relevant context with timing and OpenAI reranking
             retrieval_start = time.time()
             if not context_docs:
                 query = f"{lead_data.role} {lead_data.campaign} {lead_data.prior_course_interest}"
-                # Use hybrid search with cross-encoder reranking for better context
-                search_results = await retrieval.hybrid_search(query, limit=5)  # Get more candidates for reranking
+                # Use hybrid search with OpenAI reranking for better context
+                search_results = await retrieval.fast_search(query, limit=2)  # Fastest possible with minimal results
                 
-                # Apply cross-encoder reranking specifically for NextAction agent
-                from app.services.cross_encoder_reranker import reranker
-                if len(search_results) > 3:
-                    reranked_results = await reranker.rerank_results(
-                        query=query,
-                        results=search_results,
-                        top_k=3,  # Top 3 most relevant for context
-                        alpha=0.4,  # Higher weight for cross-encoder in NextAction
-                        use_async=True
-                    )
-                    context_docs = [result.document for result in reranked_results]
-                    logger.info(f"NextAction agent: Reranked {len(search_results)} results to top 3 using cross-encoder")
-                else:
-                    context_docs = [result.document for result in search_results]
+                # Skip expensive reranking for NextAction agent - use results directly
+                context_docs = [result.document for result in search_results]
             
             retrieval_duration = (time.time() - retrieval_start) * 1000
             performance_monitor.record_step(trace_id, "retrieval", retrieval_duration)
@@ -273,11 +250,8 @@ Guidelines:
             # Parse response
             parsed_result = self.parser.parse(response)
             
-            # Validate channel
-            try:
-                channel = Channel(parsed_result['channel'])
-            except ValueError:
-                channel = self._get_channel_recommendation(lead_data, lead_score.heat_score)
+            # Always use policy service for channel determination (not LLM)
+            channel = self._get_channel_recommendation(lead_data, lead_score.heat_score)
             
             # Safety check for message content
             message = parsed_result.get('message', '')
@@ -316,6 +290,19 @@ Guidelines:
             performance_monitor.finish_trace(trace_id, status_code=500, error_type=type(e).__name__)
             return self._get_fallback_recommendation(lead_data, lead_score.heat_score)
     
+    async def generate_recommendation_fast(
+        self, 
+        lead_data: LeadInput, 
+        lead_score: LeadScore
+    ) -> Recommendation:
+        """Generate fast recommendation without RAG retrieval - optimized for speed."""
+        try:
+            # Use fallback recommendation for speed (no LLM, no RAG)
+            return self._get_fallback_recommendation(lead_data, lead_score.heat_score)
+        except Exception as e:
+            logger.error(f"Error generating fast recommendation: {e}")
+            return self._get_fallback_recommendation(lead_data, lead_score.heat_score)
+    
     async def craft_first_message(
         self, 
         lead_data: LeadInput, 
@@ -338,10 +325,7 @@ Guidelines:
             optimal_channel = policy_service.get_optimal_channel(lead_score.heat_score)
             
             # Craft message based on channel
-            if optimal_channel == "telegram":
-                message_content = telegram_service.craft_telegram_message(lead_data, lead_score.heat_score)
-                channel = Channel.TELEGRAM
-            elif optimal_channel == "rag_email":
+            if optimal_channel == "rag_email":
                 # Use RAG email service for detailed personalization
                 from app.services.rag_email_service import rag_email_service
                 rag_email = await rag_email_service.generate_personalized_email(lead_data, lead_score.heat_score.value, context_docs)
