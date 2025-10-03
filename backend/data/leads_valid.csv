@@ -1,0 +1,451 @@
+name,email,phone,source,recency_days,region,role,campaign,page_views,last_touch,prior_course_interest,search_keywords,time_spent,course_actions
+Lead_hot_500,hot500@example.com,+1-555-1499,webinar,1,North America,ML Engineer,ML_Masters,39,demo_request,medium,machine learning course,638,demo_request
+Lead_cold_251,cold251@example.com,+1-555-3250,social_media,70,Asia Pacific,Other,General_Ad,2,social_media,none,free course,74,
+Lead_warm_777,warm777@example.com,+1-555-2776,social_media,11,North America,Analyst,ML_Masters,18,newsletter,medium,data science course,560,newsletter_signup
+Lead_cold_680,cold680@example.com,+1-555-3679,social_media,75,Europe,Other,Free_Course,1,social_media,low,free course,41,
+Lead_hot_993,hot993@example.com,+1-555-1992,webinar,5,Asia Pacific,Data Scientist,ML_Masters,42,email,medium,machine learning course,717,book_demo
+Lead_cold_677,cold677@example.com,+1-555-3676,ad,79,Asia Pacific,Other,Free_Course,3,ad_click,none,free course,38,
+Lead_cold_116,cold116@example.com,+1-555-3115,social_media,85,North America,Student,General_Ad,3,social_media,none,free course,41,
+Lead_cold_154,cold154@example.com,+1-555-3153,ad,39,North America,Student,Free_Course,1,social_media,none,free course,80,
+Lead_cold_14,cold14@example.com,+1-555-3013,social_media,63,Asia Pacific,Student,Free_Course,2,social_media,low,free course,111,
+Lead_warm_762,warm762@example.com,+1-555-2761,social_media,18,North America,Student,Free_Course,14,newsletter,low,data science course,188,newsletter_signup
+Lead_cold_702,cold702@example.com,+1-555-3701,social_media,85,North America,Other,General_Ad,1,ad_click,low,free course,111,
+Lead_hot_699,hot699@example.com,+1-555-1698,webinar,2,Asia Pacific,Manager,ML_Masters,23,demo_request,medium,machine learning course,1204,book_demo
+Lead_warm_759,warm759@example.com,+1-555-2758,website,9,Asia Pacific,Analyst,ML_Masters,6,email,medium,data science course,253,
+Lead_warm_263,warm263@example.com,+1-555-2262,social_media,18,North America,Developer,Free_Course,10,email,medium,data science course,269,
+Lead_cold_241,cold241@example.com,+1-555-3240,social_media,39,Europe,Other,General_Ad,1,social_media,none,free course,67,
+Lead_warm_929,warm929@example.com,+1-555-2928,website,8,Europe,Student,ML_Masters,13,email,low,data science course,415,
+Lead_warm_781,warm781@example.com,+1-555-2780,website,11,North America,Developer,Free_Course,6,newsletter,medium,data science course,310,download_brochure
+Lead_cold_772,cold772@example.com,+1-555-3771,ad,55,Europe,Student,General_Ad,3,social_media,none,free course,101,
+Lead_hot_20,hot20@example.com,+1-555-1019,website,1,Asia Pacific,ML Engineer,AI_Bootcamp,39,demo_request,high,machine learning course,1309,schedule_call
+Lead_warm_683,warm683@example.com,+1-555-2682,website,14,Asia Pacific,Developer,ML_Masters,15,email,low,data science course,551,
+Lead_warm_70,warm70@example.com,+1-555-2069,social_media,10,Asia Pacific,Developer,Free_Course,16,newsletter,medium,data science course,580,download_brochure
+Lead_hot_554,hot554@example.com,+1-555-1553,website,4,Europe,ML Engineer,AI_Bootcamp,29,email,medium,machine learning course,1637,schedule_call
+Lead_cold_958,cold958@example.com,+1-555-3957,social_media,75,Europe,Other,Free_Course,1,social_media,none,free course,64,
+Lead_cold_711,cold711@example.com,+1-555-3710,social_media,84,North America,Student,General_Ad,1,ad_click,none,free course,51,
+Lead_warm_39,warm39@example.com,+1-555-2038,website,9,Asia Pacific,Developer,Free_Course,16,email,low,data science course,342,newsletter_signup
+Lead_hot_940,hot940@example.com,+1-555-1939,webinar,2,Europe,Data Scientist,ML_Masters,24,email,medium,machine learning course,1411,book_demo
+Lead_hot_765,hot765@example.com,+1-555-1764,website,2,Asia Pacific,ML Engineer,AI_Bootcamp,49,email,medium,machine learning course,1425,schedule_call
+Lead_warm_926,warm926@example.com,+1-555-2925,social_media,8,North America,Developer,Free_Course,12,email,medium,data science course,417,newsletter_signup
+Lead_hot_544,hot544@example.com,+1-555-1543,website,5,Asia Pacific,ML Engineer,ML_Masters,48,demo_request,medium,machine learning course,1427,book_demo
+Lead_hot_424,hot424@example.com,+1-555-1423,webinar,1,Europe,Data Scientist,AI_Bootcamp,39,demo_request,high,machine learning course,1409,demo_request
+Lead_hot_465,hot465@example.com,+1-555-1464,webinar,2,North America,Data Scientist,AI_Bootcamp,40,email,medium,machine learning course,878,demo_request
+Lead_warm_689,warm689@example.com,+1-555-2688,website,15,Asia Pacific,Student,ML_Masters,7,newsletter,low,data science course,480,
+Lead_hot_158,hot158@example.com,+1-555-1157,website,3,Europe,Data Scientist,ML_Masters,21,demo_request,high,machine learning course,1312,demo_request
+Lead_warm_912,warm912@example.com,+1-555-2911,social_media,14,North America,Student,ML_Masters,6,email,medium,data science course,519,
+Lead_cold_832,cold832@example.com,+1-555-3831,ad,85,North America,Student,Free_Course,2,ad_click,low,free course,73,
+Lead_hot_415,hot415@example.com,+1-555-1414,website,6,Europe,ML Engineer,ML_Masters,27,email,medium,machine learning course,1259,book_demo
+Lead_hot_258,hot258@example.com,+1-555-1257,webinar,6,North America,Manager,ML_Masters,32,demo_request,medium,machine learning course,1555,demo_request
+Lead_hot_980,hot980@example.com,+1-555-1979,website,6,North America,Manager,AI_Bootcamp,25,demo_request,medium,machine learning course,1212,book_demo
+Lead_cold_961,cold961@example.com,+1-555-3960,ad,31,Asia Pacific,Student,Free_Course,2,ad_click,none,free course,117,
+Lead_cold_907,cold907@example.com,+1-555-3906,social_media,60,Asia Pacific,Student,General_Ad,3,ad_click,low,free course,37,
+Lead_warm_824,warm824@example.com,+1-555-2823,social_media,14,Asia Pacific,Student,ML_Masters,11,email,medium,data science course,461,newsletter_signup
+Lead_hot_592,hot592@example.com,+1-555-1591,webinar,1,North America,ML Engineer,AI_Bootcamp,40,demo_request,medium,machine learning course,989,book_demo
+Lead_hot_583,hot583@example.com,+1-555-1582,referral,1,North America,Data Scientist,ML_Masters,23,demo_request,high,machine learning course,1510,demo_request
+Lead_warm_517,warm517@example.com,+1-555-2516,social_media,10,North America,Analyst,Free_Course,8,newsletter,medium,data science course,326,
+Lead_cold_494,cold494@example.com,+1-555-3493,ad,79,Europe,Other,General_Ad,3,social_media,low,free course,53,
+Lead_hot_677,hot677@example.com,+1-555-1676,webinar,6,Asia Pacific,ML Engineer,ML_Masters,46,demo_request,medium,machine learning course,1209,schedule_call
+Lead_cold_970,cold970@example.com,+1-555-3969,ad,56,North America,Student,Free_Course,3,social_media,none,free course,40,
+Lead_hot_952,hot952@example.com,+1-555-1951,website,6,North America,ML Engineer,ML_Masters,33,email,medium,machine learning course,1373,book_demo
+Lead_cold_389,cold389@example.com,+1-555-3388,ad,55,Europe,Other,General_Ad,2,ad_click,none,free course,90,
+Lead_warm_973,warm973@example.com,+1-555-2972,social_media,17,Europe,Student,ML_Masters,9,newsletter,medium,data science course,447,
+Lead_warm_882,warm882@example.com,+1-555-2881,social_media,12,Europe,Analyst,Free_Course,18,email,medium,data science course,447,newsletter_signup
+Lead_cold_858,cold858@example.com,+1-555-3857,social_media,60,Asia Pacific,Other,Free_Course,2,social_media,low,free course,46,
+Lead_cold_659,cold659@example.com,+1-555-3658,social_media,39,North America,Student,Free_Course,2,ad_click,none,free course,96,
+Lead_cold_462,cold462@example.com,+1-555-3461,ad,61,Asia Pacific,Other,Free_Course,1,ad_click,none,free course,53,
+Lead_warm_783,warm783@example.com,+1-555-2782,website,17,Europe,Analyst,ML_Masters,13,email,low,data science course,504,
+Lead_warm_516,warm516@example.com,+1-555-2515,social_media,18,Europe,Student,ML_Masters,10,newsletter,low,data science course,288,newsletter_signup
+Lead_hot_582,hot582@example.com,+1-555-1581,website,2,Asia Pacific,Manager,ML_Masters,23,demo_request,high,machine learning course,1238,book_demo
+Lead_warm_196,warm196@example.com,+1-555-2195,social_media,14,Asia Pacific,Student,ML_Masters,15,newsletter,low,data science course,471,newsletter_signup
+Lead_hot_211,hot211@example.com,+1-555-1210,webinar,3,Europe,ML Engineer,ML_Masters,45,demo_request,high,machine learning course,1750,demo_request
+Lead_hot_177,hot177@example.com,+1-555-1176,website,6,Europe,Manager,ML_Masters,44,email,high,machine learning course,1352,book_demo
+Lead_warm_473,warm473@example.com,+1-555-2472,social_media,13,Europe,Student,ML_Masters,5,newsletter,medium,data science course,450,download_brochure
+Lead_cold_973,cold973@example.com,+1-555-3972,social_media,62,Asia Pacific,Other,General_Ad,3,ad_click,none,free course,57,
+Lead_hot_992,hot992@example.com,+1-555-1991,referral,2,Europe,Manager,AI_Bootcamp,45,demo_request,high,machine learning course,1523,book_demo
+Lead_cold_934,cold934@example.com,+1-555-3933,social_media,89,Asia Pacific,Other,General_Ad,1,social_media,low,free course,87,
+Lead_warm_460,warm460@example.com,+1-555-2459,social_media,16,Asia Pacific,Developer,Free_Course,15,email,low,data science course,211,
+Lead_hot_4,hot4@example.com,+1-555-1003,website,3,Asia Pacific,Manager,ML_Masters,47,email,medium,machine learning course,789,book_demo
+Lead_warm_942,warm942@example.com,+1-555-2941,website,18,Europe,Analyst,Free_Course,15,newsletter,medium,data science course,360,download_brochure
+Lead_hot_758,hot758@example.com,+1-555-1757,webinar,1,Europe,Manager,ML_Masters,23,demo_request,high,machine learning course,1461,book_demo
+Lead_hot_230,hot230@example.com,+1-555-1229,webinar,3,Europe,Manager,ML_Masters,25,email,high,machine learning course,983,book_demo
+Lead_hot_576,hot576@example.com,+1-555-1575,webinar,4,Asia Pacific,Data Scientist,ML_Masters,49,email,high,machine learning course,1476,demo_request
+Lead_cold_577,cold577@example.com,+1-555-3576,ad,50,Europe,Student,General_Ad,3,social_media,none,free course,105,
+Lead_warm_374,warm374@example.com,+1-555-2373,website,19,North America,Developer,ML_Masters,16,newsletter,low,data science course,271,download_brochure
+Lead_warm_200,warm200@example.com,+1-555-2199,website,15,North America,Student,ML_Masters,6,email,low,data science course,345,download_brochure
+Lead_cold_212,cold212@example.com,+1-555-3211,ad,59,Europe,Other,Free_Course,3,ad_click,low,free course,97,
+Lead_cold_342,cold342@example.com,+1-555-3341,ad,47,Europe,Other,General_Ad,3,ad_click,none,free course,116,
+Lead_warm_431,warm431@example.com,+1-555-2430,social_media,12,Asia Pacific,Developer,ML_Masters,12,email,medium,data science course,223,download_brochure
+Lead_cold_899,cold899@example.com,+1-555-3898,social_media,53,Europe,Other,Free_Course,1,ad_click,low,free course,65,
+Lead_hot_124,hot124@example.com,+1-555-1123,website,4,Asia Pacific,Data Scientist,ML_Masters,24,demo_request,high,machine learning course,923,demo_request
+Lead_hot_810,hot810@example.com,+1-555-1809,referral,1,Europe,ML Engineer,AI_Bootcamp,36,demo_request,medium,machine learning course,1482,demo_request
+Lead_cold_188,cold188@example.com,+1-555-3187,social_media,73,North America,Student,Free_Course,2,ad_click,none,free course,77,
+Lead_cold_122,cold122@example.com,+1-555-3121,social_media,77,Asia Pacific,Student,Free_Course,1,social_media,none,free course,110,
+Lead_hot_271,hot271@example.com,+1-555-1270,referral,1,North America,ML Engineer,AI_Bootcamp,23,demo_request,medium,machine learning course,1432,book_demo
+Lead_warm_998,warm998@example.com,+1-555-2997,website,13,Europe,Developer,Free_Course,9,email,low,data science course,252,
+Lead_hot_10,hot10@example.com,+1-555-1009,referral,4,North America,ML Engineer,ML_Masters,40,email,high,machine learning course,937,schedule_call
+Lead_cold_803,cold803@example.com,+1-555-3802,social_media,83,North America,Student,General_Ad,2,ad_click,low,free course,52,
+Lead_cold_853,cold853@example.com,+1-555-3852,social_media,47,Europe,Student,General_Ad,2,ad_click,none,free course,85,
+Lead_hot_207,hot207@example.com,+1-555-1206,website,1,North America,ML Engineer,AI_Bootcamp,32,email,medium,machine learning course,1517,schedule_call
+Lead_cold_288,cold288@example.com,+1-555-3287,social_media,52,Europe,Student,Free_Course,3,social_media,low,free course,48,
+Lead_hot_522,hot522@example.com,+1-555-1521,referral,2,North America,Data Scientist,ML_Masters,21,demo_request,high,machine learning course,1357,demo_request
+Lead_cold_384,cold384@example.com,+1-555-3383,ad,33,North America,Other,General_Ad,1,social_media,low,free course,41,
+Lead_warm_571,warm571@example.com,+1-555-2570,website,10,Asia Pacific,Student,Free_Course,16,newsletter,low,data science course,367,
+Lead_cold_168,cold168@example.com,+1-555-3167,social_media,39,Europe,Student,General_Ad,2,ad_click,none,free course,89,
+Lead_cold_927,cold927@example.com,+1-555-3926,ad,52,Asia Pacific,Student,Free_Course,1,social_media,low,free course,92,
+Lead_hot_771,hot771@example.com,+1-555-1770,website,3,North America,ML Engineer,ML_Masters,20,demo_request,medium,machine learning course,711,book_demo
+Lead_warm_893,warm893@example.com,+1-555-2892,social_media,9,Europe,Analyst,Free_Course,15,newsletter,medium,data science course,568,newsletter_signup
+Lead_cold_944,cold944@example.com,+1-555-3943,social_media,39,Asia Pacific,Other,General_Ad,3,ad_click,low,free course,69,
+Lead_hot_864,hot864@example.com,+1-555-1863,referral,5,Europe,Manager,AI_Bootcamp,36,demo_request,medium,machine learning course,1023,demo_request
+Lead_warm_335,warm335@example.com,+1-555-2334,social_media,10,Europe,Developer,Free_Course,10,email,low,data science course,451,
+Lead_warm_385,warm385@example.com,+1-555-2384,website,9,Asia Pacific,Student,Free_Course,5,email,medium,data science course,234,download_brochure
+Lead_hot_91,hot91@example.com,+1-555-1090,website,6,North America,Manager,ML_Masters,49,demo_request,medium,machine learning course,680,demo_request
+Lead_warm_581,warm581@example.com,+1-555-2580,social_media,14,Europe,Developer,Free_Course,9,newsletter,low,data science course,555,
+Lead_cold_993,cold993@example.com,+1-555-3992,ad,47,North America,Student,General_Ad,2,ad_click,none,free course,80,
+Lead_hot_384,hot384@example.com,+1-555-1383,webinar,1,Europe,Data Scientist,ML_Masters,26,email,medium,machine learning course,1532,schedule_call
+Lead_warm_531,warm531@example.com,+1-555-2530,social_media,19,Europe,Analyst,ML_Masters,15,newsletter,low,data science course,472,newsletter_signup
+Lead_warm_32,warm32@example.com,+1-555-2031,website,12,Europe,Student,Free_Course,9,email,low,data science course,478,download_brochure
+Lead_warm_30,warm30@example.com,+1-555-2029,website,9,Asia Pacific,Student,ML_Masters,12,email,medium,data science course,455,newsletter_signup
+Lead_hot_609,hot609@example.com,+1-555-1608,website,6,North America,Data Scientist,AI_Bootcamp,46,email,medium,machine learning course,959,schedule_call
+Lead_hot_962,hot962@example.com,+1-555-1961,website,1,North America,Manager,ML_Masters,45,email,high,machine learning course,1405,schedule_call
+Lead_hot_452,hot452@example.com,+1-555-1451,webinar,1,Asia Pacific,ML Engineer,ML_Masters,48,email,medium,machine learning course,736,demo_request
+Lead_warm_551,warm551@example.com,+1-555-2550,social_media,8,North America,Developer,ML_Masters,9,newsletter,medium,data science course,392,newsletter_signup
+Lead_cold_797,cold797@example.com,+1-555-3796,ad,57,Asia Pacific,Student,Free_Course,1,ad_click,none,free course,91,
+Lead_hot_441,hot441@example.com,+1-555-1440,referral,1,Europe,Manager,AI_Bootcamp,38,demo_request,high,machine learning course,1055,schedule_call
+Lead_cold_837,cold837@example.com,+1-555-3836,ad,79,North America,Other,Free_Course,3,ad_click,low,free course,64,
+Lead_cold_393,cold393@example.com,+1-555-3392,social_media,75,Europe,Other,Free_Course,1,ad_click,low,free course,58,
+Lead_cold_319,cold319@example.com,+1-555-3318,social_media,43,Asia Pacific,Student,Free_Course,3,social_media,none,free course,73,
+Lead_cold_74,cold74@example.com,+1-555-3073,ad,30,Asia Pacific,Other,Free_Course,3,social_media,low,free course,49,
+Lead_hot_189,hot189@example.com,+1-555-1188,referral,5,North America,Manager,ML_Masters,32,email,high,machine learning course,1736,demo_request
+Lead_hot_659,hot659@example.com,+1-555-1658,webinar,4,Europe,Data Scientist,AI_Bootcamp,47,email,medium,machine learning course,1522,book_demo
+Lead_warm_721,warm721@example.com,+1-555-2720,social_media,10,Asia Pacific,Developer,ML_Masters,8,newsletter,low,data science course,488,download_brochure
+Lead_cold_618,cold618@example.com,+1-555-3617,social_media,30,Asia Pacific,Student,Free_Course,1,social_media,low,free course,59,
+Lead_warm_507,warm507@example.com,+1-555-2506,website,15,North America,Student,ML_Masters,14,email,medium,data science course,286,download_brochure
+Lead_cold_75,cold75@example.com,+1-555-3074,ad,65,Asia Pacific,Other,General_Ad,1,social_media,low,free course,88,
+Lead_cold_341,cold341@example.com,+1-555-3340,ad,80,North America,Other,Free_Course,3,social_media,low,free course,53,
+Lead_cold_470,cold470@example.com,+1-555-3469,social_media,79,Asia Pacific,Other,Free_Course,3,ad_click,low,free course,54,
+Lead_cold_932,cold932@example.com,+1-555-3931,ad,75,North America,Student,Free_Course,3,ad_click,none,free course,55,
+Lead_cold_818,cold818@example.com,+1-555-3817,ad,69,North America,Other,Free_Course,3,social_media,low,free course,70,
+Lead_hot_184,hot184@example.com,+1-555-1183,website,1,Europe,Data Scientist,ML_Masters,49,demo_request,high,machine learning course,1297,schedule_call
+Lead_cold_161,cold161@example.com,+1-555-3160,social_media,60,North America,Student,General_Ad,1,ad_click,low,free course,109,
+Lead_cold_95,cold95@example.com,+1-555-3094,ad,60,Asia Pacific,Other,General_Ad,1,ad_click,none,free course,90,
+Lead_hot_59,hot59@example.com,+1-555-1058,webinar,1,Europe,Data Scientist,ML_Masters,29,email,medium,machine learning course,1017,schedule_call
+Lead_warm_393,warm393@example.com,+1-555-2392,website,14,North America,Analyst,ML_Masters,16,email,medium,data science course,274,newsletter_signup
+Lead_cold_909,cold909@example.com,+1-555-3908,social_media,32,Europe,Other,General_Ad,3,social_media,low,free course,72,
+Lead_hot_105,hot105@example.com,+1-555-1104,referral,1,North America,ML Engineer,ML_Masters,45,email,medium,machine learning course,914,demo_request
+Lead_warm_115,warm115@example.com,+1-555-2114,website,18,Europe,Analyst,Free_Course,15,newsletter,medium,data science course,333,newsletter_signup
+Lead_warm_155,warm155@example.com,+1-555-2154,website,19,Europe,Student,ML_Masters,18,email,low,data science course,473,
+Lead_warm_51,warm51@example.com,+1-555-2050,social_media,18,Asia Pacific,Analyst,ML_Masters,16,email,low,data science course,506,newsletter_signup
+Lead_hot_989,hot989@example.com,+1-555-1988,website,4,Asia Pacific,ML Engineer,ML_Masters,41,demo_request,medium,machine learning course,652,schedule_call
+Lead_hot_818,hot818@example.com,+1-555-1817,referral,5,Europe,Data Scientist,AI_Bootcamp,49,demo_request,medium,machine learning course,1400,schedule_call
+Lead_cold_90,cold90@example.com,+1-555-3089,ad,60,North America,Other,General_Ad,3,ad_click,low,free course,50,
+Lead_cold_553,cold553@example.com,+1-555-3552,social_media,43,Asia Pacific,Student,General_Ad,3,ad_click,none,free course,69,
+Lead_warm_87,warm87@example.com,+1-555-2086,social_media,17,Europe,Student,ML_Masters,12,email,low,data science course,285,newsletter_signup
+Lead_hot_425,hot425@example.com,+1-555-1424,website,6,Asia Pacific,Data Scientist,AI_Bootcamp,34,email,medium,machine learning course,826,demo_request
+Lead_cold_714,cold714@example.com,+1-555-3713,ad,46,North America,Student,Free_Course,3,ad_click,low,free course,54,
+Lead_hot_931,hot931@example.com,+1-555-1930,referral,1,North America,Data Scientist,ML_Masters,23,email,high,machine learning course,1296,demo_request
+Lead_cold_52,cold52@example.com,+1-555-3051,social_media,81,Asia Pacific,Other,General_Ad,1,ad_click,none,free course,30,
+Lead_hot_975,hot975@example.com,+1-555-1974,webinar,4,North America,Manager,AI_Bootcamp,41,email,high,machine learning course,1577,demo_request
+Lead_warm_203,warm203@example.com,+1-555-2202,website,14,North America,Student,ML_Masters,10,newsletter,low,data science course,517,download_brochure
+Lead_hot_534,hot534@example.com,+1-555-1533,website,1,Asia Pacific,ML Engineer,AI_Bootcamp,43,demo_request,medium,machine learning course,1759,demo_request
+Lead_cold_242,cold242@example.com,+1-555-3241,social_media,82,North America,Student,General_Ad,1,social_media,low,free course,43,
+Lead_cold_953,cold953@example.com,+1-555-3952,ad,36,Europe,Student,Free_Course,2,ad_click,low,free course,46,
+Lead_hot_237,hot237@example.com,+1-555-1236,referral,3,Europe,ML Engineer,ML_Masters,32,demo_request,high,machine learning course,1450,demo_request
+Lead_warm_102,warm102@example.com,+1-555-2101,website,8,Asia Pacific,Analyst,Free_Course,14,email,medium,data science course,213,newsletter_signup
+Lead_hot_461,hot461@example.com,+1-555-1460,webinar,2,North America,Data Scientist,ML_Masters,23,demo_request,medium,machine learning course,683,schedule_call
+Lead_cold_830,cold830@example.com,+1-555-3829,ad,82,Asia Pacific,Other,Free_Course,2,social_media,low,free course,63,
+Lead_cold_104,cold104@example.com,+1-555-3103,ad,47,Europe,Other,Free_Course,3,social_media,low,free course,77,
+Lead_warm_293,warm293@example.com,+1-555-2292,website,10,Asia Pacific,Analyst,ML_Masters,5,email,low,data science course,380,download_brochure
+Lead_cold_669,cold669@example.com,+1-555-3668,ad,49,Europe,Student,General_Ad,2,social_media,none,free course,87,
+Lead_cold_799,cold799@example.com,+1-555-3798,social_media,82,Asia Pacific,Other,General_Ad,2,social_media,low,free course,80,
+Lead_warm_305,warm305@example.com,+1-555-2304,website,13,Asia Pacific,Analyst,ML_Masters,7,email,medium,data science course,187,newsletter_signup
+Lead_hot_394,hot394@example.com,+1-555-1393,webinar,1,Asia Pacific,Data Scientist,AI_Bootcamp,32,demo_request,medium,machine learning course,738,schedule_call
+Lead_hot_981,hot981@example.com,+1-555-1980,website,4,Europe,ML Engineer,ML_Masters,40,demo_request,high,machine learning course,1044,demo_request
+Lead_warm_992,warm992@example.com,+1-555-2991,website,19,Asia Pacific,Developer,ML_Masters,18,newsletter,low,data science course,530,
+Lead_warm_651,warm651@example.com,+1-555-2650,social_media,16,Europe,Analyst,ML_Masters,16,newsletter,low,data science course,236,
+Lead_warm_719,warm719@example.com,+1-555-2718,website,19,Europe,Student,Free_Course,12,email,medium,data science course,354,
+Lead_warm_532,warm532@example.com,+1-555-2531,social_media,18,North America,Analyst,Free_Course,8,newsletter,medium,data science course,414,
+Lead_cold_942,cold942@example.com,+1-555-3941,ad,44,Europe,Student,Free_Course,2,social_media,none,free course,102,
+Lead_cold_971,cold971@example.com,+1-555-3970,ad,45,Europe,Other,General_Ad,2,social_media,none,free course,109,
+Lead_hot_782,hot782@example.com,+1-555-1781,website,1,North America,Manager,AI_Bootcamp,22,email,medium,machine learning course,886,book_demo
+Lead_cold_410,cold410@example.com,+1-555-3409,social_media,66,North America,Other,General_Ad,1,social_media,none,free course,107,
+Lead_cold_1000,cold1000@example.com,+1-555-3999,ad,45,Asia Pacific,Student,General_Ad,2,social_media,none,free course,113,
+Lead_warm_848,warm848@example.com,+1-555-2847,website,19,Europe,Developer,Free_Course,14,newsletter,medium,data science course,530,
+Lead_hot_437,hot437@example.com,+1-555-1436,webinar,4,Asia Pacific,Manager,AI_Bootcamp,30,email,high,machine learning course,1582,demo_request
+Lead_hot_876,hot876@example.com,+1-555-1875,referral,6,Europe,Data Scientist,ML_Masters,26,email,high,machine learning course,1102,schedule_call
+Lead_cold_82,cold82@example.com,+1-555-3081,ad,45,Asia Pacific,Other,General_Ad,3,social_media,none,free course,55,
+Lead_warm_525,warm525@example.com,+1-555-2524,website,14,Europe,Analyst,Free_Course,13,newsletter,low,data science course,227,download_brochure
+Lead_hot_142,hot142@example.com,+1-555-1141,website,6,North America,Manager,AI_Bootcamp,22,demo_request,high,machine learning course,1606,book_demo
+Lead_hot_233,hot233@example.com,+1-555-1232,referral,3,Europe,ML Engineer,ML_Masters,37,demo_request,medium,machine learning course,902,demo_request
+Lead_hot_617,hot617@example.com,+1-555-1616,referral,5,Europe,ML Engineer,AI_Bootcamp,42,demo_request,medium,machine learning course,625,schedule_call
+Lead_cold_866,cold866@example.com,+1-555-3865,ad,57,North America,Student,General_Ad,2,social_media,low,free course,48,
+Lead_hot_829,hot829@example.com,+1-555-1828,webinar,6,North America,Manager,AI_Bootcamp,32,demo_request,high,machine learning course,1444,demo_request
+Lead_hot_49,hot49@example.com,+1-555-1048,referral,5,Europe,Data Scientist,ML_Masters,42,demo_request,high,machine learning course,1612,demo_request
+Lead_hot_595,hot595@example.com,+1-555-1594,website,6,Asia Pacific,ML Engineer,ML_Masters,21,email,high,machine learning course,892,schedule_call
+Lead_hot_520,hot520@example.com,+1-555-1519,referral,4,Asia Pacific,ML Engineer,AI_Bootcamp,42,demo_request,medium,machine learning course,1750,schedule_call
+Lead_warm_8,warm8@example.com,+1-555-2007,social_media,10,Asia Pacific,Student,ML_Masters,17,email,low,data science course,469,newsletter_signup
+Lead_hot_564,hot564@example.com,+1-555-1563,webinar,5,Europe,ML Engineer,ML_Masters,47,demo_request,high,machine learning course,1544,demo_request
+Lead_hot_196,hot196@example.com,+1-555-1195,website,5,North America,Manager,ML_Masters,21,demo_request,medium,machine learning course,1707,book_demo
+Lead_cold_412,cold412@example.com,+1-555-3411,ad,83,Asia Pacific,Other,General_Ad,2,social_media,low,free course,70,
+Lead_warm_842,warm842@example.com,+1-555-2841,social_media,17,Asia Pacific,Developer,Free_Course,14,email,low,data science course,505,
+Lead_cold_850,cold850@example.com,+1-555-3849,ad,82,North America,Student,General_Ad,2,ad_click,low,free course,62,
+Lead_cold_89,cold89@example.com,+1-555-3088,social_media,84,North America,Other,Free_Course,3,social_media,none,free course,34,
+Lead_cold_360,cold360@example.com,+1-555-3359,social_media,72,North America,Student,General_Ad,1,ad_click,low,free course,69,
+Lead_hot_6,hot6@example.com,+1-555-1005,website,2,North America,ML Engineer,ML_Masters,45,demo_request,medium,machine learning course,1164,book_demo
+Lead_hot_340,hot340@example.com,+1-555-1339,webinar,5,Asia Pacific,Data Scientist,ML_Masters,49,email,medium,machine learning course,1143,demo_request
+Lead_warm_428,warm428@example.com,+1-555-2427,social_media,9,Asia Pacific,Developer,Free_Course,5,newsletter,medium,data science course,415,
+Lead_hot_767,hot767@example.com,+1-555-1766,website,4,Europe,Manager,AI_Bootcamp,40,email,medium,machine learning course,1120,schedule_call
+Lead_hot_485,hot485@example.com,+1-555-1484,website,6,Europe,Data Scientist,AI_Bootcamp,41,demo_request,high,machine learning course,1158,schedule_call
+Lead_hot_740,hot740@example.com,+1-555-1739,webinar,6,Asia Pacific,Manager,ML_Masters,34,email,medium,machine learning course,983,demo_request
+Lead_warm_43,warm43@example.com,+1-555-2042,social_media,13,Asia Pacific,Student,Free_Course,11,email,low,data science course,341,
+Lead_cold_6,cold6@example.com,+1-555-3005,ad,60,North America,Other,General_Ad,2,ad_click,low,free course,37,
+Lead_warm_982,warm982@example.com,+1-555-2981,social_media,15,North America,Analyst,Free_Course,5,email,low,data science course,274,
+Lead_hot_536,hot536@example.com,+1-555-1535,website,3,Asia Pacific,Data Scientist,AI_Bootcamp,47,email,high,machine learning course,1000,schedule_call
+Lead_hot_706,hot706@example.com,+1-555-1705,webinar,1,Europe,Data Scientist,AI_Bootcamp,44,demo_request,high,machine learning course,1438,book_demo
+Lead_warm_25,warm25@example.com,+1-555-2024,social_media,14,North America,Developer,Free_Course,17,newsletter,low,data science course,470,download_brochure
+Lead_warm_576,warm576@example.com,+1-555-2575,social_media,11,North America,Student,ML_Masters,6,email,medium,data science course,234,newsletter_signup
+Lead_hot_687,hot687@example.com,+1-555-1686,referral,2,North America,Manager,ML_Masters,48,email,medium,machine learning course,1419,demo_request
+Lead_warm_534,warm534@example.com,+1-555-2533,website,9,Asia Pacific,Student,Free_Course,5,newsletter,low,data science course,294,
+Lead_cold_591,cold591@example.com,+1-555-3590,ad,80,North America,Student,General_Ad,3,social_media,low,free course,97,
+Lead_hot_598,hot598@example.com,+1-555-1597,referral,2,North America,Manager,ML_Masters,27,email,medium,machine learning course,969,book_demo
+Lead_hot_984,hot984@example.com,+1-555-1983,webinar,4,North America,ML Engineer,AI_Bootcamp,47,demo_request,high,machine learning course,1533,schedule_call
+Lead_cold_806,cold806@example.com,+1-555-3805,social_media,50,Asia Pacific,Other,Free_Course,2,social_media,low,free course,59,
+Lead_cold_541,cold541@example.com,+1-555-3540,ad,52,Europe,Student,Free_Course,1,ad_click,none,free course,36,
+Lead_cold_840,cold840@example.com,+1-555-3839,social_media,55,Asia Pacific,Student,General_Ad,3,ad_click,low,free course,65,
+Lead_hot_643,hot643@example.com,+1-555-1642,webinar,4,Asia Pacific,ML Engineer,ML_Masters,38,demo_request,medium,machine learning course,1644,demo_request
+Lead_hot_875,hot875@example.com,+1-555-1874,website,4,Europe,ML Engineer,ML_Masters,47,email,high,machine learning course,1257,book_demo
+Lead_cold_758,cold758@example.com,+1-555-3757,social_media,57,Europe,Other,General_Ad,2,social_media,low,free course,61,
+Lead_hot_26,hot26@example.com,+1-555-1025,webinar,1,North America,Manager,ML_Masters,35,demo_request,high,machine learning course,1259,schedule_call
+Lead_warm_427,warm427@example.com,+1-555-2426,social_media,14,North America,Student,Free_Course,5,newsletter,low,data science course,475,download_brochure
+Lead_warm_232,warm232@example.com,+1-555-2231,social_media,11,Europe,Student,ML_Masters,7,newsletter,low,data science course,407,download_brochure
+Lead_hot_674,hot674@example.com,+1-555-1673,website,3,North America,Data Scientist,ML_Masters,44,email,medium,machine learning course,651,schedule_call
+Lead_cold_453,cold453@example.com,+1-555-3452,ad,79,Europe,Other,Free_Course,1,social_media,low,free course,108,
+Lead_hot_862,hot862@example.com,+1-555-1861,referral,3,Asia Pacific,Manager,ML_Masters,29,email,high,machine learning course,1387,demo_request
+Lead_warm_677,warm677@example.com,+1-555-2676,website,9,Asia Pacific,Developer,ML_Masters,12,email,medium,data science course,231,
+Lead_hot_884,hot884@example.com,+1-555-1883,webinar,3,Europe,ML Engineer,AI_Bootcamp,30,demo_request,high,machine learning course,826,book_demo
+Lead_hot_201,hot201@example.com,+1-555-1200,website,4,North America,ML Engineer,AI_Bootcamp,39,email,high,machine learning course,1776,book_demo
+Lead_cold_941,cold941@example.com,+1-555-3940,ad,63,North America,Other,General_Ad,2,social_media,none,free course,33,
+Lead_hot_115,hot115@example.com,+1-555-1114,referral,5,Asia Pacific,Data Scientist,ML_Masters,31,demo_request,high,machine learning course,1112,book_demo
+Lead_hot_732,hot732@example.com,+1-555-1731,website,4,Asia Pacific,Data Scientist,AI_Bootcamp,28,email,medium,machine learning course,871,schedule_call
+Lead_hot_361,hot361@example.com,+1-555-1360,website,3,North America,Data Scientist,AI_Bootcamp,28,demo_request,high,machine learning course,1658,demo_request
+Lead_warm_523,warm523@example.com,+1-555-2522,website,16,Europe,Student,ML_Masters,15,email,low,data science course,299,download_brochure
+Lead_cold_233,cold233@example.com,+1-555-3232,social_media,65,Europe,Other,Free_Course,1,ad_click,none,free course,112,
+Lead_hot_96,hot96@example.com,+1-555-1095,referral,5,Europe,Data Scientist,AI_Bootcamp,28,email,medium,machine learning course,1669,book_demo
+Lead_hot_216,hot216@example.com,+1-555-1215,website,6,North America,Manager,ML_Masters,48,email,medium,machine learning course,1404,book_demo
+Lead_warm_111,warm111@example.com,+1-555-2110,social_media,12,Europe,Student,ML_Masters,10,email,medium,data science course,296,
+Lead_warm_554,warm554@example.com,+1-555-2553,social_media,13,Europe,Student,Free_Course,11,newsletter,low,data science course,192,
+Lead_warm_676,warm676@example.com,+1-555-2675,social_media,19,Europe,Student,ML_Masters,13,email,medium,data science course,487,download_brochure
+Lead_hot_305,hot305@example.com,+1-555-1304,webinar,2,North America,Data Scientist,AI_Bootcamp,39,email,medium,machine learning course,833,book_demo
+Lead_cold_404,cold404@example.com,+1-555-3403,social_media,37,North America,Student,General_Ad,2,social_media,none,free course,31,
+Lead_hot_241,hot241@example.com,+1-555-1240,referral,2,Europe,Data Scientist,AI_Bootcamp,45,demo_request,medium,machine learning course,1756,book_demo
+Lead_warm_866,warm866@example.com,+1-555-2865,website,19,Asia Pacific,Student,Free_Course,6,newsletter,low,data science course,486,newsletter_signup
+Lead_hot_470,hot470@example.com,+1-555-1469,webinar,3,Europe,Data Scientist,ML_Masters,35,demo_request,high,machine learning course,1103,book_demo
+Lead_cold_448,cold448@example.com,+1-555-3447,social_media,63,North America,Other,Free_Course,3,social_media,low,free course,46,
+Lead_hot_749,hot749@example.com,+1-555-1748,webinar,4,Asia Pacific,Data Scientist,AI_Bootcamp,30,email,high,machine learning course,1289,schedule_call
+Lead_hot_955,hot955@example.com,+1-555-1954,website,5,Europe,Manager,ML_Masters,21,demo_request,medium,machine learning course,730,schedule_call
+Lead_hot_969,hot969@example.com,+1-555-1968,website,2,North America,ML Engineer,ML_Masters,28,demo_request,high,machine learning course,1336,demo_request
+Lead_cold_200,cold200@example.com,+1-555-3199,ad,79,North America,Student,Free_Course,2,social_media,low,free course,96,
+Lead_warm_216,warm216@example.com,+1-555-2215,social_media,10,Europe,Student,ML_Masters,17,email,medium,data science course,495,
+Lead_cold_530,cold530@example.com,+1-555-3529,social_media,70,North America,Other,Free_Course,2,social_media,low,free course,73,
+Lead_warm_22,warm22@example.com,+1-555-2021,social_media,15,Asia Pacific,Analyst,ML_Masters,5,newsletter,medium,data science course,418,newsletter_signup
+Lead_cold_666,cold666@example.com,+1-555-3665,social_media,38,North America,Student,General_Ad,1,social_media,low,free course,57,
+Lead_warm_94,warm94@example.com,+1-555-2093,social_media,16,North America,Developer,ML_Masters,15,newsletter,low,data science course,355,download_brochure
+Lead_hot_744,hot744@example.com,+1-555-1743,webinar,6,North America,ML Engineer,AI_Bootcamp,42,demo_request,medium,machine learning course,1775,schedule_call
+Lead_warm_892,warm892@example.com,+1-555-2891,website,19,North America,Student,ML_Masters,6,email,medium,data science course,500,newsletter_signup
+Lead_hot_712,hot712@example.com,+1-555-1711,webinar,6,North America,Data Scientist,AI_Bootcamp,44,email,medium,machine learning course,1449,schedule_call
+Lead_cold_975,cold975@example.com,+1-555-3974,social_media,79,Europe,Other,Free_Course,2,ad_click,none,free course,41,
+Lead_warm_254,warm254@example.com,+1-555-2253,website,12,North America,Analyst,ML_Masters,12,email,medium,data science course,407,
+Lead_hot_735,hot735@example.com,+1-555-1734,webinar,6,North America,ML Engineer,AI_Bootcamp,30,demo_request,high,machine learning course,1787,demo_request
+Lead_cold_66,cold66@example.com,+1-555-3065,social_media,79,Europe,Other,Free_Course,3,ad_click,low,free course,98,
+Lead_cold_409,cold409@example.com,+1-555-3408,social_media,76,Asia Pacific,Other,Free_Course,3,social_media,none,free course,110,
+Lead_cold_55,cold55@example.com,+1-555-3054,ad,88,North America,Student,General_Ad,1,social_media,none,free course,40,
+Lead_cold_865,cold865@example.com,+1-555-3864,ad,66,Asia Pacific,Other,General_Ad,2,social_media,none,free course,82,
+Lead_cold_99,cold99@example.com,+1-555-3098,ad,43,Europe,Student,Free_Course,1,social_media,low,free course,101,
+Lead_warm_829,warm829@example.com,+1-555-2828,website,15,North America,Developer,Free_Course,5,email,medium,data science course,527,newsletter_signup
+Lead_hot_708,hot708@example.com,+1-555-1707,website,2,North America,Data Scientist,ML_Masters,45,email,medium,machine learning course,1536,demo_request
+Lead_warm_368,warm368@example.com,+1-555-2367,social_media,12,Europe,Student,Free_Course,13,newsletter,low,data science course,260,newsletter_signup
+Lead_warm_579,warm579@example.com,+1-555-2578,website,9,Europe,Developer,Free_Course,12,email,low,data science course,247,newsletter_signup
+Lead_hot_383,hot383@example.com,+1-555-1382,webinar,3,Asia Pacific,Data Scientist,AI_Bootcamp,42,email,high,machine learning course,1159,book_demo
+Lead_warm_812,warm812@example.com,+1-555-2811,website,19,North America,Student,ML_Masters,14,newsletter,low,data science course,597,newsletter_signup
+Lead_cold_194,cold194@example.com,+1-555-3193,ad,34,Asia Pacific,Student,Free_Course,1,social_media,low,free course,71,
+Lead_hot_950,hot950@example.com,+1-555-1949,referral,5,Asia Pacific,Data Scientist,ML_Masters,35,demo_request,high,machine learning course,1021,book_demo
+Lead_warm_346,warm346@example.com,+1-555-2345,website,19,North America,Developer,ML_Masters,14,email,low,data science course,213,
+Lead_hot_373,hot373@example.com,+1-555-1372,website,5,North America,Data Scientist,ML_Masters,20,demo_request,medium,machine learning course,702,book_demo
+Lead_warm_12,warm12@example.com,+1-555-2011,social_media,17,Asia Pacific,Developer,Free_Course,7,email,medium,data science course,437,newsletter_signup
+Lead_warm_512,warm512@example.com,+1-555-2511,social_media,11,Asia Pacific,Developer,Free_Course,13,newsletter,low,data science course,334,newsletter_signup
+Lead_hot_889,hot889@example.com,+1-555-1888,referral,2,North America,Manager,AI_Bootcamp,36,demo_request,high,machine learning course,925,demo_request
+Lead_cold_906,cold906@example.com,+1-555-3905,social_media,88,North America,Other,General_Ad,1,ad_click,low,free course,110,
+Lead_cold_696,cold696@example.com,+1-555-3695,ad,56,Europe,Other,Free_Course,2,ad_click,none,free course,118,
+Lead_warm_404,warm404@example.com,+1-555-2403,website,11,Asia Pacific,Analyst,ML_Masters,13,newsletter,low,data science course,542,
+Lead_warm_271,warm271@example.com,+1-555-2270,social_media,13,North America,Student,Free_Course,11,newsletter,medium,data science course,390,newsletter_signup
+Lead_cold_229,cold229@example.com,+1-555-3228,social_media,35,Europe,Student,Free_Course,1,social_media,low,free course,39,
+Lead_warm_448,warm448@example.com,+1-555-2447,social_media,10,Asia Pacific,Analyst,Free_Course,10,newsletter,low,data science course,395,
+Lead_warm_481,warm481@example.com,+1-555-2480,website,8,North America,Developer,ML_Masters,10,email,low,data science course,532,newsletter_signup
+Lead_warm_386,warm386@example.com,+1-555-2385,website,15,Asia Pacific,Analyst,Free_Course,7,newsletter,medium,data science course,323,download_brochure
+Lead_warm_414,warm414@example.com,+1-555-2413,social_media,17,Asia Pacific,Analyst,ML_Masters,18,email,medium,data science course,564,
+Lead_hot_428,hot428@example.com,+1-555-1427,website,5,Europe,Data Scientist,ML_Masters,27,demo_request,medium,machine learning course,873,schedule_call
+Lead_warm_224,warm224@example.com,+1-555-2223,website,19,North America,Student,Free_Course,8,newsletter,medium,data science course,596,download_brochure
+Lead_cold_311,cold311@example.com,+1-555-3310,ad,41,Asia Pacific,Other,General_Ad,1,ad_click,low,free course,50,
+Lead_warm_646,warm646@example.com,+1-555-2645,website,9,North America,Developer,ML_Masters,11,email,low,data science course,459,
+Lead_warm_88,warm88@example.com,+1-555-2087,website,15,Asia Pacific,Student,Free_Course,15,email,low,data science course,469,newsletter_signup
+Lead_hot_772,hot772@example.com,+1-555-1771,webinar,2,North America,ML Engineer,ML_Masters,42,demo_request,high,machine learning course,1733,book_demo
+Lead_hot_18,hot18@example.com,+1-555-1017,website,3,Asia Pacific,ML Engineer,ML_Masters,21,email,high,machine learning course,1612,book_demo
+Lead_hot_898,hot898@example.com,+1-555-1897,webinar,5,Asia Pacific,Data Scientist,ML_Masters,45,demo_request,high,machine learning course,1592,demo_request
+Lead_hot_651,hot651@example.com,+1-555-1650,referral,5,Asia Pacific,Manager,ML_Masters,20,demo_request,high,machine learning course,940,schedule_call
+Lead_warm_543,warm543@example.com,+1-555-2542,website,18,Europe,Analyst,Free_Course,5,email,medium,data science course,316,
+Lead_cold_451,cold451@example.com,+1-555-3450,social_media,67,North America,Other,General_Ad,2,ad_click,low,free course,49,
+Lead_warm_818,warm818@example.com,+1-555-2817,website,11,North America,Analyst,ML_Masters,12,email,medium,data science course,450,download_brochure
+Lead_warm_355,warm355@example.com,+1-555-2354,social_media,18,Asia Pacific,Analyst,Free_Course,17,email,low,data science course,355,newsletter_signup
+Lead_cold_178,cold178@example.com,+1-555-3177,ad,45,North America,Other,General_Ad,2,social_media,none,free course,116,
+Lead_hot_957,hot957@example.com,+1-555-1956,website,3,Asia Pacific,Data Scientist,ML_Masters,23,demo_request,high,machine learning course,1714,schedule_call
+Lead_hot_54,hot54@example.com,+1-555-1053,website,4,North America,ML Engineer,ML_Masters,24,demo_request,medium,machine learning course,1121,book_demo
+Lead_warm_281,warm281@example.com,+1-555-2280,website,17,North America,Student,ML_Masters,6,newsletter,medium,data science course,384,
+Lead_cold_125,cold125@example.com,+1-555-3124,social_media,74,Europe,Other,Free_Course,3,ad_click,low,free course,104,
+Lead_warm_603,warm603@example.com,+1-555-2602,website,19,Europe,Analyst,ML_Masters,14,newsletter,low,data science course,440,newsletter_signup
+Lead_warm_895,warm895@example.com,+1-555-2894,social_media,10,Asia Pacific,Analyst,Free_Course,17,newsletter,low,data science course,266,
+Lead_hot_344,hot344@example.com,+1-555-1343,website,4,Europe,ML Engineer,ML_Masters,38,email,medium,machine learning course,1542,demo_request
+Lead_warm_44,warm44@example.com,+1-555-2043,social_media,15,North America,Student,ML_Masters,10,newsletter,low,data science course,421,
+Lead_hot_354,hot354@example.com,+1-555-1353,website,6,Europe,ML Engineer,AI_Bootcamp,41,email,high,machine learning course,682,book_demo
+Lead_cold_578,cold578@example.com,+1-555-3577,social_media,61,Asia Pacific,Student,General_Ad,3,social_media,none,free course,118,
+Lead_cold_135,cold135@example.com,+1-555-3134,ad,71,Europe,Other,General_Ad,2,ad_click,low,free course,97,
+Lead_warm_786,warm786@example.com,+1-555-2785,website,14,Asia Pacific,Developer,ML_Masters,16,email,low,data science course,515,newsletter_signup
+Lead_warm_233,warm233@example.com,+1-555-2232,website,12,North America,Analyst,ML_Masters,15,email,low,data science course,521,newsletter_signup
+Lead_cold_299,cold299@example.com,+1-555-3298,ad,36,Europe,Student,General_Ad,2,social_media,none,free course,56,
+Lead_warm_935,warm935@example.com,+1-555-2934,website,14,Europe,Developer,ML_Masters,9,newsletter,medium,data science course,511,newsletter_signup
+Lead_warm_445,warm445@example.com,+1-555-2444,website,19,Europe,Student,Free_Course,10,newsletter,low,data science course,267,newsletter_signup
+Lead_cold_256,cold256@example.com,+1-555-3255,social_media,56,Asia Pacific,Student,General_Ad,1,ad_click,none,free course,49,
+Lead_warm_820,warm820@example.com,+1-555-2819,website,18,Asia Pacific,Developer,ML_Masters,11,email,low,data science course,566,newsletter_signup
+Lead_warm_378,warm378@example.com,+1-555-2377,website,11,Europe,Student,ML_Masters,9,newsletter,medium,data science course,217,
+Lead_warm_819,warm819@example.com,+1-555-2818,website,14,Europe,Student,ML_Masters,13,newsletter,medium,data science course,582,
+Lead_warm_900,warm900@example.com,+1-555-2899,social_media,12,Asia Pacific,Student,Free_Course,7,newsletter,low,data science course,573,newsletter_signup
+Lead_cold_849,cold849@example.com,+1-555-3848,ad,78,Europe,Other,Free_Course,3,social_media,low,free course,72,
+Lead_hot_985,hot985@example.com,+1-555-1984,referral,1,Asia Pacific,Data Scientist,AI_Bootcamp,25,demo_request,medium,machine learning course,1542,schedule_call
+Lead_cold_166,cold166@example.com,+1-555-3165,social_media,43,Asia Pacific,Other,General_Ad,1,social_media,none,free course,34,
+Lead_cold_705,cold705@example.com,+1-555-3704,social_media,40,Europe,Student,Free_Course,2,social_media,none,free course,89,
+Lead_cold_764,cold764@example.com,+1-555-3763,ad,71,Europe,Student,Free_Course,1,ad_click,none,free course,111,
+Lead_cold_551,cold551@example.com,+1-555-3550,social_media,74,North America,Student,Free_Course,3,ad_click,low,free course,93,
+Lead_hot_132,hot132@example.com,+1-555-1131,webinar,4,North America,ML Engineer,AI_Bootcamp,25,email,high,machine learning course,1074,book_demo
+Lead_hot_721,hot721@example.com,+1-555-1720,website,3,Europe,Manager,AI_Bootcamp,20,demo_request,high,machine learning course,1214,schedule_call
+Lead_cold_392,cold392@example.com,+1-555-3391,ad,87,North America,Other,Free_Course,2,ad_click,low,free course,98,
+Lead_cold_642,cold642@example.com,+1-555-3641,social_media,45,Asia Pacific,Student,General_Ad,3,social_media,none,free course,33,
+Lead_hot_183,hot183@example.com,+1-555-1182,webinar,5,Europe,ML Engineer,ML_Masters,24,email,medium,machine learning course,1572,demo_request
+Lead_warm_978,warm978@example.com,+1-555-2977,social_media,11,Asia Pacific,Analyst,Free_Course,15,email,low,data science course,283,download_brochure
+Lead_warm_337,warm337@example.com,+1-555-2336,website,13,Asia Pacific,Student,ML_Masters,18,email,medium,data science course,500,newsletter_signup
+Lead_warm_109,warm109@example.com,+1-555-2108,social_media,18,Europe,Developer,Free_Course,10,newsletter,low,data science course,529,newsletter_signup
+Lead_cold_990,cold990@example.com,+1-555-3989,ad,66,North America,Other,General_Ad,1,social_media,none,free course,103,
+Lead_hot_375,hot375@example.com,+1-555-1374,webinar,4,Europe,ML Engineer,ML_Masters,23,email,high,machine learning course,1238,book_demo
+Lead_cold_411,cold411@example.com,+1-555-3410,ad,46,Europe,Other,Free_Course,2,social_media,low,free course,109,
+Lead_cold_173,cold173@example.com,+1-555-3172,ad,73,Europe,Other,Free_Course,2,social_media,none,free course,76,
+Lead_warm_353,warm353@example.com,+1-555-2352,social_media,12,Europe,Student,ML_Masters,14,newsletter,low,data science course,594,
+Lead_cold_903,cold903@example.com,+1-555-3902,ad,65,Asia Pacific,Other,Free_Course,2,ad_click,low,free course,39,
+Lead_cold_361,cold361@example.com,+1-555-3360,ad,64,Asia Pacific,Other,General_Ad,3,ad_click,low,free course,34,
+Lead_hot_979,hot979@example.com,+1-555-1978,website,5,Europe,Manager,ML_Masters,33,demo_request,high,machine learning course,1696,demo_request
+Lead_hot_413,hot413@example.com,+1-555-1412,webinar,3,Europe,Data Scientist,AI_Bootcamp,40,demo_request,high,machine learning course,1512,demo_request
+Lead_hot_785,hot785@example.com,+1-555-1784,webinar,2,Asia Pacific,Data Scientist,ML_Masters,34,email,high,machine learning course,883,demo_request
+Lead_hot_265,hot265@example.com,+1-555-1264,website,4,Europe,ML Engineer,AI_Bootcamp,33,email,high,machine learning course,713,demo_request
+Lead_warm_59,warm59@example.com,+1-555-2058,website,16,Asia Pacific,Student,Free_Course,15,email,medium,data science course,538,newsletter_signup
+Lead_hot_278,hot278@example.com,+1-555-1277,webinar,1,North America,Manager,ML_Masters,39,demo_request,medium,machine learning course,1019,book_demo
+Lead_warm_700,warm700@example.com,+1-555-2699,website,19,Europe,Developer,ML_Masters,7,email,low,data science course,580,newsletter_signup
+Lead_hot_324,hot324@example.com,+1-555-1323,website,3,Asia Pacific,ML Engineer,AI_Bootcamp,34,email,medium,machine learning course,1771,schedule_call
+Lead_warm_659,warm659@example.com,+1-555-2658,social_media,10,North America,Student,ML_Masters,8,newsletter,low,data science course,469,newsletter_signup
+Lead_warm_462,warm462@example.com,+1-555-2461,social_media,16,Europe,Analyst,Free_Course,15,newsletter,low,data science course,550,
+Lead_cold_608,cold608@example.com,+1-555-3607,ad,43,Asia Pacific,Other,General_Ad,1,social_media,none,free course,46,
+Lead_warm_828,warm828@example.com,+1-555-2827,social_media,8,North America,Developer,Free_Course,14,newsletter,low,data science course,343,download_brochure
+Lead_hot_367,hot367@example.com,+1-555-1366,webinar,4,Europe,Data Scientist,AI_Bootcamp,48,demo_request,high,machine learning course,1466,book_demo
+Lead_warm_495,warm495@example.com,+1-555-2494,website,11,North America,Student,Free_Course,11,newsletter,low,data science course,341,newsletter_signup
+Lead_cold_296,cold296@example.com,+1-555-3295,ad,47,North America,Student,General_Ad,1,ad_click,none,free course,61,
+Lead_cold_979,cold979@example.com,+1-555-3978,ad,46,North America,Other,General_Ad,2,social_media,none,free course,37,
+Lead_warm_877,warm877@example.com,+1-555-2876,social_media,15,Europe,Student,Free_Course,7,email,medium,data science course,374,newsletter_signup
+Lead_warm_242,warm242@example.com,+1-555-2241,social_media,16,Asia Pacific,Developer,ML_Masters,9,email,low,data science course,524,newsletter_signup
+Lead_hot_173,hot173@example.com,+1-555-1172,referral,6,Europe,ML Engineer,ML_Masters,24,demo_request,medium,machine learning course,1304,demo_request
+Lead_warm_244,warm244@example.com,+1-555-2243,social_media,16,Asia Pacific,Student,ML_Masters,13,newsletter,low,data science course,572,download_brochure
+Lead_cold_568,cold568@example.com,+1-555-3567,ad,43,Europe,Other,General_Ad,1,ad_click,low,free course,47,
+Lead_warm_937,warm937@example.com,+1-555-2936,website,19,Asia Pacific,Analyst,ML_Masters,10,newsletter,medium,data science course,266,
+Lead_warm_966,warm966@example.com,+1-555-2965,social_media,8,Europe,Analyst,Free_Course,14,email,low,data science course,439,download_brochure
+Lead_warm_794,warm794@example.com,+1-555-2793,website,9,Europe,Developer,ML_Masters,18,email,low,data science course,368,download_brochure
+Lead_warm_890,warm890@example.com,+1-555-2889,website,17,North America,Student,ML_Masters,9,newsletter,medium,data science course,481,
+Lead_hot_910,hot910@example.com,+1-555-1909,referral,6,North America,Data Scientist,AI_Bootcamp,28,demo_request,high,machine learning course,1202,demo_request
+Lead_hot_657,hot657@example.com,+1-555-1656,website,6,North America,ML Engineer,AI_Bootcamp,39,email,high,machine learning course,935,book_demo
+Lead_warm_466,warm466@example.com,+1-555-2465,website,17,Asia Pacific,Developer,Free_Course,13,email,low,data science course,495,
+Lead_cold_376,cold376@example.com,+1-555-3375,social_media,82,Asia Pacific,Student,General_Ad,1,social_media,none,free course,48,
+Lead_warm_536,warm536@example.com,+1-555-2535,website,12,North America,Analyst,Free_Course,6,newsletter,low,data science course,311,download_brochure
+Lead_warm_883,warm883@example.com,+1-555-2882,social_media,9,Europe,Student,ML_Masters,14,newsletter,low,data science course,262,newsletter_signup
+Lead_cold_581,cold581@example.com,+1-555-3580,social_media,65,Europe,Student,Free_Course,2,social_media,none,free course,112,
+Lead_cold_796,cold796@example.com,+1-555-3795,social_media,47,Europe,Student,Free_Course,2,social_media,low,free course,40,
+Lead_hot_877,hot877@example.com,+1-555-1876,webinar,2,Europe,ML Engineer,ML_Masters,32,email,high,machine learning course,1017,schedule_call
+Lead_cold_440,cold440@example.com,+1-555-3439,social_media,46,Asia Pacific,Student,Free_Course,1,ad_click,low,free course,117,
+Lead_hot_127,hot127@example.com,+1-555-1126,referral,5,Europe,ML Engineer,AI_Bootcamp,20,demo_request,medium,machine learning course,1427,schedule_call
+Lead_cold_700,cold700@example.com,+1-555-3699,ad,87,Europe,Student,General_Ad,3,social_media,low,free course,42,
+Lead_hot_705,hot705@example.com,+1-555-1704,referral,4,Asia Pacific,Manager,AI_Bootcamp,22,demo_request,medium,machine learning course,1639,demo_request
+Lead_cold_282,cold282@example.com,+1-555-3281,ad,30,Europe,Student,Free_Course,2,ad_click,low,free course,93,
+Lead_hot_601,hot601@example.com,+1-555-1600,webinar,3,North America,Manager,ML_Masters,46,email,high,machine learning course,870,schedule_call
+Lead_hot_326,hot326@example.com,+1-555-1325,website,2,North America,Manager,AI_Bootcamp,45,demo_request,medium,machine learning course,904,schedule_call
+Lead_hot_444,hot444@example.com,+1-555-1443,referral,1,Europe,ML Engineer,AI_Bootcamp,21,demo_request,medium,machine learning course,1745,demo_request
+Lead_warm_621,warm621@example.com,+1-555-2620,social_media,12,Europe,Developer,Free_Course,7,email,low,data science course,197,newsletter_signup
+Lead_warm_886,warm886@example.com,+1-555-2885,website,17,Asia Pacific,Student,Free_Course,17,email,low,data science course,300,
+Lead_cold_444,cold444@example.com,+1-555-3443,ad,47,Europe,Student,Free_Course,1,social_media,low,free course,72,
+Lead_warm_243,warm243@example.com,+1-555-2242,social_media,18,North America,Analyst,ML_Masters,15,email,medium,data science course,507,download_brochure
+Lead_hot_483,hot483@example.com,+1-555-1482,webinar,2,North America,Data Scientist,ML_Masters,49,demo_request,high,machine learning course,739,demo_request
+Lead_cold_827,cold827@example.com,+1-555-3826,ad,50,Europe,Student,Free_Course,2,ad_click,low,free course,36,
+Lead_warm_563,warm563@example.com,+1-555-2562,website,14,Europe,Developer,ML_Masters,11,newsletter,medium,data science course,347,download_brochure
+Lead_cold_623,cold623@example.com,+1-555-3622,social_media,43,Europe,Student,Free_Course,2,social_media,low,free course,73,
+Lead_cold_861,cold861@example.com,+1-555-3860,social_media,44,Asia Pacific,Student,General_Ad,1,ad_click,low,free course,111,
+Lead_cold_610,cold610@example.com,+1-555-3609,social_media,47,Europe,Student,Free_Course,2,ad_click,none,free course,71,
+Lead_cold_283,cold283@example.com,+1-555-3282,social_media,38,Asia Pacific,Other,Free_Course,2,ad_click,none,free course,36,
+Lead_cold_195,cold195@example.com,+1-555-3194,ad,75,North America,Other,Free_Course,3,social_media,none,free course,96,
+Lead_cold_863,cold863@example.com,+1-555-3862,social_media,73,North America,Student,Free_Course,3,social_media,none,free course,74,
+Lead_cold_492,cold492@example.com,+1-555-3491,ad,45,Asia Pacific,Student,General_Ad,2,ad_click,low,free course,37,
+Lead_hot_252,hot252@example.com,+1-555-1251,website,2,Asia Pacific,ML Engineer,AI_Bootcamp,42,email,high,machine learning course,1286,demo_request
+Lead_hot_314,hot314@example.com,+1-555-1313,webinar,3,North America,ML Engineer,AI_Bootcamp,20,demo_request,medium,machine learning course,1259,schedule_call
+Lead_hot_21,hot21@example.com,+1-555-1020,website,6,North America,Data Scientist,AI_Bootcamp,29,email,medium,machine learning course,1736,book_demo
+Lead_warm_629,warm629@example.com,+1-555-2628,social_media,18,Europe,Developer,ML_Masters,7,newsletter,low,data science course,373,download_brochure
+Lead_warm_803,warm803@example.com,+1-555-2802,website,17,Asia Pacific,Developer,Free_Course,9,email,low,data science course,522,download_brochure
+Lead_warm_328,warm328@example.com,+1-555-2327,social_media,10,Europe,Student,ML_Masters,16,email,low,data science course,489,download_brochure
+Lead_cold_735,cold735@example.com,+1-555-3734,social_media,54,Asia Pacific,Student,General_Ad,1,ad_click,none,free course,109,
+Lead_hot_547,hot547@example.com,+1-555-1546,webinar,5,Asia Pacific,Manager,ML_Masters,48,email,high,machine learning course,964,schedule_call
+Lead_hot_328,hot328@example.com,+1-555-1327,referral,1,Asia Pacific,ML Engineer,AI_Bootcamp,20,demo_request,medium,machine learning course,1172,book_demo
+Lead_cold_139,cold139@example.com,+1-555-3138,social_media,61,Asia Pacific,Other,General_Ad,1,ad_click,none,free course,72,
+Lead_warm_73,warm73@example.com,+1-555-2072,social_media,8,Europe,Developer,Free_Course,13,newsletter,medium,data science course,304,
+Lead_hot_790,hot790@example.com,+1-555-1789,website,1,North America,ML Engineer,ML_Masters,49,email,medium,machine learning course,1260,book_demo
+Lead_warm_304,warm304@example.com,+1-555-2303,website,14,North America,Analyst,ML_Masters,13,email,medium,data science course,541,download_brochure
+Lead_hot_800,hot800@example.com,+1-555-1799,referral,3,Europe,ML Engineer,ML_Masters,49,demo_request,medium,machine learning course,1329,demo_request
+Lead_cold_10,cold10@example.com,+1-555-3009,social_media,81,Europe,Student,General_Ad,1,social_media,none,free course,48,
+Lead_cold_1,cold1@example.com,+1-555-3000,social_media,41,Europe,Other,General_Ad,1,ad_click,low,free course,83,
+Lead_warm_165,warm165@example.com,+1-555-2164,website,19,Asia Pacific,Analyst,Free_Course,6,newsletter,medium,data science course,257,
+Lead_cold_544,cold544@example.com,+1-555-3543,ad,74,Europe,Other,General_Ad,2,social_media,none,free course,112,
+Lead_cold_134,cold134@example.com,+1-555-3133,ad,36,Europe,Other,Free_Course,1,social_media,none,free course,46,
+Lead_warm_690,warm690@example.com,+1-555-2689,website,9,North America,Analyst,ML_Masters,11,newsletter,low,data science course,592,
+Lead_warm_188,warm188@example.com,+1-555-2187,website,15,North America,Analyst,Free_Course,10,email,medium,data science course,460,download_brochure
+Lead_cold_886,cold886@example.com,+1-555-3885,social_media,52,North America,Other,Free_Course,2,social_media,none,free course,86,
+Lead_hot_299,hot299@example.com,+1-555-1298,referral,6,Asia Pacific,Manager,ML_Masters,30,email,medium,machine learning course,1261,schedule_call
+Lead_warm_691,warm691@example.com,+1-555-2690,social_media,18,Asia Pacific,Developer,ML_Masters,13,newsletter,low,data science course,334,download_brochure
+Lead_cold_490,cold490@example.com,+1-555-3489,social_media,30,Europe,Student,Free_Course,1,social_media,none,free course,74,
+Lead_hot_563,hot563@example.com,+1-555-1562,website,1,Asia Pacific,Manager,ML_Masters,24,email,high,machine learning course,1230,demo_request
+Lead_warm_826,warm826@example.com,+1-555-2825,social_media,11,Asia Pacific,Analyst,Free_Course,13,newsletter,medium,data science course,220,download_brochure
+Lead_cold_5,cold5@example.com,+1-555-3004,ad,82,Asia Pacific,Student,Free_Course,3,social_media,none,free course,65,
+Lead_warm_837,warm837@example.com,+1-555-2836,website,18,Asia Pacific,Developer,Free_Course,5,newsletter,low,data science course,558,newsletter_signup
+Lead_cold_884,cold884@example.com,+1-555-3883,social_media,36,Europe,Student,Free_Course,3,social_media,low,free course,68,
+Lead_cold_77,cold77@example.com,+1-555-3076,social_media,76,Asia Pacific,Student,Free_Course,3,social_media,none,free course,100,
+Lead_hot_549,hot549@example.com,+1-555-1548,referral,3,Europe,Manager,ML_Masters,35,demo_request,high,machine learning course,1197,book_demo
+Lead_warm_987,warm987@example.com,+1-555-2986,social_media,13,Asia Pacific,Developer,Free_Course,10,email,low,data science course,297,
+Lead_hot_191,hot191@example.com,+1-555-1190,referral,4,Asia Pacific,ML Engineer,AI_Bootcamp,48,email,medium,machine learning course,1515,book_demo
+Lead_cold_582,cold582@example.com,+1-555-3581,ad,86,North America,Student,Free_Course,1,ad_click,none,free course,65,
+Lead_warm_919,warm919@example.com,+1-555-2918,website,11,Asia Pacific,Developer,Free_Course,5,newsletter,medium,data science course,505,
+Lead_hot_560,hot560@example.com,+1-555-1559,referral,6,North America,Data Scientist,ML_Masters,24,demo_request,medium,machine learning course,1475,schedule_call
+Lead_cold_108,cold108@example.com,+1-555-3107,ad,39,North America,Student,General_Ad,2,ad_click,low,free course,50,
+Lead_warm_707,warm707@example.com,+1-555-2706,social_media,10,Asia Pacific,Student,ML_Masters,6,newsletter,low,data science course,255,
+Lead_warm_48,warm48@example.com,+1-555-2047,social_media,18,North America,Student,ML_Masters,14,email,low,data science course,505,
+Lead_warm_267,warm267@example.com,+1-555-2266,social_media,13,Europe,Student,Free_Course,12,email,medium,data science course,478,download_brochure
+Lead_warm_413,warm413@example.com,+1-555-2412,website,14,North America,Analyst,ML_Masters,6,newsletter,medium,data science course,251,newsletter_signup
+Lead_cold_450,cold450@example.com,+1-555-3449,ad,84,Asia Pacific,Student,Free_Course,3,ad_click,low,free course,107,
+Lead_cold_575,cold575@example.com,+1-555-3574,social_media,76,North America,Student,General_Ad,2,social_media,low,free course,119,
+Lead_cold_126,cold126@example.com,+1-555-3125,ad,37,North America,Other,General_Ad,2,ad_click,low,free course,72,
+Lead_hot_664,hot664@example.com,+1-555-1663,website,4,North America,Manager,ML_Masters,26,demo_request,medium,machine learning course,1309,demo_request
+Lead_hot_603,hot603@example.com,+1-555-1602,webinar,1,Europe,Data Scientist,ML_Masters,49,demo_request,medium,machine learning course,748,demo_request
+Lead_cold_111,cold111@example.com,+1-555-3110,social_media,38,North America,Other,Free_Course,2,ad_click,low,free course,42,
+Lead_warm_644,warm644@example.com,+1-555-2643,website,9,Asia Pacific,Developer,ML_Masters,18,email,low,data science course,254,newsletter_signup
+Lead_hot_691,hot691@example.com,+1-555-1690,webinar,3,Asia Pacific,Manager,ML_Masters,24,demo_request,high,machine learning course,903,book_demo
+Lead_warm_86,warm86@example.com,+1-555-2085,website,10,Europe,Student,Free_Course,18,newsletter,medium,data science course,221,newsletter_signup
+Lead_hot_529,hot529@example.com,+1-555-1528,website,6,Europe,Data Scientist,ML_Masters,37,demo_request,medium,machine learning course,1159,book_demo
+Lead_warm_300,warm300@example.com,+1-555-2299,website,17,Asia Pacific,Student,Free_Course,10,email,low,data science course,434,newsletter_signup
+Lead_warm_817,warm817@example.com,+1-555-2816,website,17,North America,Analyst,ML_Masters,10,email,medium,data science course,526,download_brochure
+Lead_warm_628,warm628@example.com,+1-555-2627,social_media,14,North America,Analyst,Free_Course,9,newsletter,medium,data science course,512,download_brochure
