@@ -43,6 +43,7 @@ const Overview = () => {
     }
   };
 
+
   const QuickActionCard = ({ title, description, icon: Icon, color, onClick }) => (
     <div 
       className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
@@ -150,6 +151,7 @@ const Overview = () => {
           </div>
         )}
       </div>
+
 
       {/* Quick Actions */}
       <div className="mb-8">

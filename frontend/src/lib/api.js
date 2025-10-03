@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = '/api/v1';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 15000,  // Reduced from 30s to 15s
+    timeout: 30000,  // Increased to 30s for email generation
     headers: {
         'Content-Type': 'application/json',
     },
@@ -103,7 +103,7 @@ export const leadAPI = {
     // Get personalized email content without sending
     getPersonalizedEmail: async (leadData) => {
         const response = await api.post('/get-personalized-email', leadData, {
-            timeout: 10000  // 10 second timeout for RAG email generation
+            timeout: 20000  // Increased timeout for educational email generation (20s)
         });
         return response.data;
     },
@@ -119,24 +119,6 @@ export const leadAPI = {
         return response.data;
     },
 
-    // Send Telegram message to phone number
-    sendTelegramMessage: async (phoneNumber, message, leadData) => {
-        const response = await api.post('/send-telegram-to-phone', {
-            phone_number: phoneNumber,
-            message: message,
-            lead_data: leadData
-        });
-        return response.data;
-    },
-
-    // Send WhatsApp message to phone number
-    sendWhatsAppMessage: async (phoneNumber, message) => {
-        const response = await api.post('/send-whatsapp-message', {
-            phone_number: phoneNumber,
-            message: message
-        });
-        return response.data;
-    },
 };
 
 // System API
@@ -144,7 +126,7 @@ export const systemAPI = {
     // Health check (use proxy for consistency)
     healthCheck: async () => {
         const response = await api.get('/health', {
-            timeout: 10000  // Increased to 10 seconds for health check
+            timeout: 5000  // Reduced to 5 seconds for faster health checks
         });
         return response.data;
     },
@@ -161,11 +143,6 @@ export const systemAPI = {
         return response.data;
     },
 
-    // Ingest knowledge documents
-    ingestKnowledge: async () => {
-        const response = await api.post('/ingest-knowledge');
-        return response.data;
-    },
 
     // Send test email
     sendTestEmail: async (toEmail) => {
@@ -176,17 +153,3 @@ export const systemAPI = {
     },
 };
 
-// A/B Testing API
-export const abTestingAPI = {
-    // Generate A/B test messages
-    generateABTestMessage: async (leadData) => {
-        const response = await api.post('/ab-test-message', leadData);
-        return response.data;
-    },
-
-    // Submit A/B test evaluation
-    submitABEvaluation: async (evaluationData) => {
-        const response = await api.post('/submit-ab-evaluation', evaluationData);
-        return response.data;
-    },
-};

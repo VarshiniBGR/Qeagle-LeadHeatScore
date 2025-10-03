@@ -18,94 +18,29 @@ import {
 import toast from 'react-hot-toast';
 import { leadAPI } from '../lib/api';
 
-// Fallback email content functions
-const getFallbackSubject = (heatScore, leadData) => {
-  switch (heatScore) {
-    case 'hot':
-      return `URGENT: Exclusive Invitation - 48 Hours Only`;
-    case 'warm':
-      return `Free Webinar: ${leadData.role} Success in AI Program`;
-    case 'cold':
-      return `Free AI Career Assessment for ${leadData.role}s`;
-    default:
-      return `Personalized Email for ${leadData.name}`;
-  }
+// Minimal personalized fallback content
+const getMinimalFallbackSubject = (leadData) => {
+  return `Hi ${leadData.name} - Let's Connect`;
 };
 
-const getFallbackEmailContent = (heatScore, leadData) => {
+const getMinimalFallbackContent = (leadData) => {
   const name = leadData.name || 'there';
   const role = leadData.role || 'professional';
-  const pageViews = leadData.page_views || 0;
+  const campaign = leadData.campaign || 'our program';
   
-  switch (heatScore) {
-    case 'hot':
-      return `Hi ${name}!
+  return `Hi ${name},
 
-Your ${pageViews} page views show strong interest in our AI Program.
+I noticed your interest in our ${campaign} program. As a ${role}, I believe this could be valuable for your career.
 
-🎯 EXCLUSIVE OFFER (48 Hours):
-• 30% discount + free consultation (worth $500)
-• Only 2 spots left
-• Join 500+ professionals who got promoted
-
-Reply 'YES' to claim your spot!
+I'd love to discuss how we can help you achieve your goals.
 
 Best regards,
-LeadHeatScore Team`;
-    
-    case 'warm':
-      return `Hi ${name}!
-
-Your ${pageViews} page views show interest in our AI Program.
-
-🎓 FREE WEBINAR:
-• 'Leadership in AI Transformation' with Google's former AI team lead
-• Strategies for ${role}s
-• Free AI Leadership Guide (worth $200)
-• Network with 200+ professionals
-• 14-day free trial
-
-No sales pitch, just value. Reply 'WEBINAR' to join!
-
-Best regards,
-LeadHeatScore Team`;
-    
-    case 'cold':
-      return `Hi ${name}!
-
-Hope you're doing well. I wanted to share something valuable - our 'AI Career Assessment' (worth $200) is now free.
-
-As a ${role}, understanding your AI readiness is crucial. This assessment includes:
-
-📊 FREE ASSESSMENT:
-• AI skill evaluation
-• Career roadmap
-• Industry insights
-• Personalized recommendations
-• 5-part 'AI Career Trends' series
-
-No strings attached, just valuable insights. Loved by 50,000+ professionals.
-
-Get started here: [Assessment Link]
-
-Best regards,
-LeadHeatScore Team`;
-    
-    default:
-      return `Hi ${name}!
-
-Thank you for your interest in our AI Program.
-
-We have exciting opportunities for ${role}s like yourself.
-
-Best regards,
-LeadHeatScore Team`;
-  }
+LearnSprout Team`;
 };
 
 // Function to clean rationale from subject lines
 const cleanSubjectLine = (subject, heatScore, leadData) => {
-  if (!subject) return getFallbackSubject(heatScore, leadData);
+  if (!subject) return getMinimalFallbackSubject(leadData);
   
   // Check if subject contains rationale words
   const rationaleWords = ['leverages', 'emphasizing', 'creating', 'acknowledges', 'making', 'because', 'this email', 'by emphasizing', 'while also', 'personal touch'];
@@ -114,7 +49,7 @@ const cleanSubjectLine = (subject, heatScore, leadData) => {
   
   if (isRationale) {
     // Return a proper subject line instead of rationale
-    return getFallbackSubject(heatScore, leadData);
+    return getMinimalFallbackSubject(leadData);
   }
   
   return subject;
@@ -124,7 +59,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
   const [personalizedEmail, setPersonalizedEmail] = useState(null);
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedMessage, setEditedMessage] = useState(lead.recommendation?.message_content || '');
+  const [editedMessage, setEditedMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [emailType, setEmailType] = useState("rag"); // All leads use RAG personalization
   const [smartStrategy, setSmartStrategy] = useState(null);
@@ -164,7 +99,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
           // No strategy needed since all leads get RAG emails
           smart_strategy: null,
           // Map API response fields to expected UI fields
-          content: emailData.content || emailData.message_content || emailData.body || getFallbackEmailContent(lead.score?.heat_score || 'hot', lead.lead_data),
+          content: emailData.content || emailData.message_content || emailData.body || getMinimalFallbackContent(lead.lead_data),
           subject: cleanSubjectLine(emailData.subject || emailData.subject_line, lead.score?.heat_score || 'hot', lead.lead_data),
           personalization_data: {
             name: lead.lead_data.name,
@@ -189,67 +124,41 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
     loadPersonalizedEmail();
   }, [lead, mode]);
 
-  // Generate recommendation on-demand if not available (only in message mode)
+  // Create a fallback recommendation if none exists
+  const fallbackRecommendation = {
+    lead_id: lead.lead_id,
+    recommended_channel: "email",
+    message_content: `Hi ${lead.lead_data?.name || 'there'}! 
+
+Thank you for your interest in our AI program. Based on your profile as a ${lead.lead_data?.role || 'professional'}, we have personalized content ready for you.
+
+Would you like to see our tailored recommendations?`,
+    rationale: "Generated fallback recommendation",
+    citations: [],
+    confidence: 0.8
+  };
+
+  const recommendation = lead.recommendation || fallbackRecommendation;
+  
+  // Initialize edited message when recommendation changes
   useEffect(() => {
-    const generateRecommendationOnDemand = async () => {
-      if (!lead.recommendation && lead.lead_data && mode === 'message') {
-        try {
-          console.log('Generating RAG recommendation for lead:', lead.lead_data.name);
-          
-          // Try RAG recommendation with overall timeout to prevent 30+ second hangs
-          const ragPromise = leadAPI.getRecommendation(lead.lead_data);
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('RAG timeout after 15 seconds')), 15000) // 15 second overall timeout
-          );
-          
-          const recommendation = await Promise.race([ragPromise, timeoutPromise]);
-          
-          // Update the lead object with the generated recommendation
-          lead.recommendation = recommendation;
-          
-          console.log('Generated RAG recommendation:', recommendation);
-        } catch (error) {
-          console.error('RAG failed, using fallback template:', error);
-          
-          // Fallback to template-based recommendation only in worst case
-          const fallbackRecommendation = {
-            lead_id: lead.lead_id,
-            recommended_channel: 'email',
-            message_content: getFallbackEmailContent(lead.score?.heat_score || 'warm', lead.lead_data),
-            rationale: `Fallback template for ${lead.score?.heat_score || 'warm'} lead`,
-            confidence: 0.7
-          };
-          
-          lead.recommendation = fallbackRecommendation;
-          console.log('Using fallback template recommendation');
-        }
-      }
-    };
-
-    generateRecommendationOnDemand();
-  }, [lead, mode]);
-
-  if (!lead.recommendation && mode === 'message') {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Generating RAG-Powered Recommendation</h3>
-            <p className="text-gray-500 mb-4">Creating personalized recommendation using AI... (Fallback to template if needed)</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    if (recommendation?.message_content) {
+      setEditedMessage(recommendation.message_content);
+    }
+  }, [recommendation]);
+  
+  // Initialize edited message on component mount
+  useEffect(() => {
+    if (recommendation?.message_content && !editedMessage) {
+      setEditedMessage(recommendation.message_content);
+    }
+  }, [recommendation?.message_content, editedMessage]);
 
   const getChannelIcon = (channel) => {
     switch (channel) {
       case 'email':
         return <Mail className="h-5 w-5" />;
-      case 'telegram':
-        return <MessageCircle className="h-5 w-5" />;
-      case 'whatsapp':
+      case 'phone':
         return <Smartphone className="h-5 w-5" />;
       case 'newsletter':
         return <FileText className="h-5 w-5" />;
@@ -262,10 +171,8 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
     switch (channel) {
       case 'email':
         return 'Email';
-      case 'telegram':
-        return 'Telegram';
-      case 'whatsapp':
-        return 'WhatsApp';
+      case 'phone':
+        return 'Phone';
       case 'newsletter':
         return 'Newsletter';
       default:
@@ -277,10 +184,8 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
     switch (channel) {
       case 'email':
         return 'bg-blue-100 text-blue-800';
-      case 'telegram':
-        return 'bg-red-100 text-red-800';
-      case 'whatsapp':
-        return 'bg-green-100 text-green-800';
+      case 'phone':
+        return 'bg-blue-100 text-blue-800';
       case 'newsletter':
         return 'bg-gray-100 text-gray-800';
       default:
@@ -289,7 +194,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
   };
 
   const handleSendMessage = async () => {
-    const message = isEditing ? editedMessage : lead.recommendation.message_content;
+    const message = isEditing ? editedMessage : recommendation.message_content;
     
     // All leads use email - check for email address
     if (!lead.lead_data?.email) {
@@ -486,31 +391,34 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                       <div className="bg-white rounded-lg border overflow-hidden shadow-lg">
                         <style>
                           {`
+                            .email-preview {
+                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                              line-height: 1.7;
+                              font-size: 16px;
+                              color: #333;
+                            }
+                            .email-preview strong {
+                              font-weight: bold !important;
+                              color: #1f2937 !important;
+                            }
+                            .email-preview br {
+                              line-height: 1.5;
+                            }
                             .email-preview del {
                               text-decoration: line-through;
                               color: #ef4444 !important;
                               opacity: 0.8;
                             }
-                            .email-preview strong {
-                              color: #fbbf24 !important;
-                              font-weight: bold;
-                            }
-                            .email-preview {
-                              white-space: pre-wrap;
-                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                              line-height: 1.6;
-                            }
                           `}
                         </style>
                         {personalizedEmail.content ? (
                           <div 
-                            className="email-preview max-h-96 overflow-y-auto p-4 bg-white"
-                          >
-                            {personalizedEmail.content}
-                          </div>
+                            className="email-preview p-4 bg-white"
+                            dangerouslySetInnerHTML={{ __html: personalizedEmail.content }}
+                          />
                         ) : personalizedEmail.html_content ? (
                           <div 
-                            className="email-preview max-h-96 overflow-y-auto p-4 bg-white"
+                            className="email-preview p-4 bg-white"
                             dangerouslySetInnerHTML={{ __html: personalizedEmail.html_content }}
                           />
                         ) : (
@@ -535,7 +443,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                 ) : (
                   <div className="bg-gray-50 rounded-lg p-4 border">
                     <p className="text-gray-800 leading-relaxed">
-                      {lead.recommendation.message_content}
+                      {recommendation.message_content}
                     </p>
                   </div>
                 )
@@ -550,7 +458,7 @@ const RecommendationPanel = ({ lead, mode = 'view', onClose }) => {
                     />
                   ) : (
                     <p className="text-gray-800 leading-relaxed">
-                      {lead.recommendation.message_content}
+                      {recommendation.message_content}
                     </p>
                   )}
                 </div>
