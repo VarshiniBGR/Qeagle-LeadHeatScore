@@ -102,7 +102,9 @@ export const leadAPI = {
 
     // Get personalized email content without sending
     getPersonalizedEmail: async (leadData) => {
-        const response = await api.post('/get-personalized-email', leadData);
+        const response = await api.post('/get-personalized-email', leadData, {
+            timeout: 10000  // 10 second timeout for RAG email generation
+        });
         return response.data;
     },
 

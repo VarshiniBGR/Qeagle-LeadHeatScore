@@ -1136,8 +1136,27 @@ async def send_test_email(to_email: str):
 async def get_personalized_email(lead_data: Dict[str, Any]):
     """Get personalized email content without sending it."""
     try:
+        # Fill in missing required fields with defaults
+        complete_lead_data = {
+            "name": lead_data.get("name", "Valued Customer"),
+            "email": lead_data.get("email", "customer@example.com"),
+            "phone": lead_data.get("phone", ""),
+            "source": lead_data.get("source", "Web"),
+            "recency_days": lead_data.get("recency_days", 7),
+            "region": lead_data.get("region", "Unknown"),
+            "role": lead_data.get("role", "Professional"),
+            "campaign": lead_data.get("campaign", "AI Program"),
+            "page_views": lead_data.get("page_views", 1),
+            "last_touch": lead_data.get("last_touch", "Website Visit"),
+            "prior_course_interest": lead_data.get("prior_course_interest", "medium"),
+            "search_keywords": lead_data.get("search_keywords", ""),
+            "time_spent": lead_data.get("time_spent", 0),
+            "course_actions": lead_data.get("course_actions", ""),
+            "cta": lead_data.get("cta", "")
+        }
+        
         # Convert to LeadInput for validation
-        lead_input = LeadInput(**lead_data)
+        lead_input = LeadInput(**complete_lead_data)
         
         # Get the lead's heat score
         if classifier.is_trained:

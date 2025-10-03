@@ -301,7 +301,7 @@ Reply with 'NEWS' to subscribe"""
         context_docs: Optional[List[KnowledgeDocument]] = None,
         force_template: bool = False
     ) -> Dict[str, str]:
-        """Generate RAG-powered personalized email."""
+        """Generate RAG-powered personalized email with timeout protection."""
         trace_id = performance_monitor.start_trace("rag_email_generation")
         
         try:
@@ -314,16 +314,16 @@ Reply with 'NEWS' to subscribe"""
                     performance_monitor.finish_trace(trace_id, status_code=200)
                     return cached_response
             
-            # Force RAG mode unless explicitly disabled (worst case scenarios only)
+            # Force template mode for faster response
             if force_template:
-                logger.info("Force template mode enabled - using template emails only due to critical failure")
+                logger.info("Force template mode enabled - using template emails for speed")
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_email(lead_data, lead_type)
             
             # RAG-FIRST: Always prioritize RAG generation over templates
             logger.info(f"RAG-FIRST mode: Generating RAG email for {lead_type} lead")
             
-            # If no LLM available, use fallback
+            # If no LLM available, use fallback immediately
             if not self.llm:
                 logger.warning("No OpenAI LLM available, using fallback email")
                 performance_monitor.finish_trace(trace_id, status_code=200)
@@ -365,7 +365,7 @@ Reply with 'NEWS' to subscribe"""
                 performance_monitor.finish_trace(trace_id, status_code=200)
                 return self._get_fallback_email(lead_data, lead_type)
             
-            # Use LLM for email generation with optimistic settings for RAG priority
+            # Use LLM for email generation with timeout protection
             try:
                 import asyncio
                 
@@ -373,10 +373,10 @@ Reply with 'NEWS' to subscribe"""
                 original_temp = self.llm.temperature
                 self.llm.temperature = 0.2  # Slightly higher for better creativity
                 
-
+                # Add timeout protection to prevent hanging
                 response = await asyncio.wait_for(
                     asyncio.to_thread(self.llm.invoke, prompt),
-                    timeout=8.0  # More time for RAG success
+                    timeout=5.0  # Reduced timeout for faster fallback
                 )
                 
                 # Restore original temperature
@@ -384,6 +384,10 @@ Reply with 'NEWS' to subscribe"""
                 
                 logger.info(f"Generated email using {self.llm_type}")
                 
+            except asyncio.TimeoutError:
+                logger.warning("LLM call timed out, using fallback email")
+                performance_monitor.finish_trace(trace_id, status_code=200)
+                return self._get_fallback_email(lead_data, lead_type)
             except Exception as e:
                 logger.error(f"Email generation failed: {e}")
                 performance_monitor.finish_trace(trace_id, status_code=200)
